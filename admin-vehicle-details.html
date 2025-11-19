@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Vehicle Details - Admin Panel - Top Autocare</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="msapplication-TileColor" content="#d4af37">
+    <meta name="application-name" content="Top Autocare">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+
+    <!-- Mobile/PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Top Autocare">
+    <link rel="apple-touch-icon" href="/assets/images/app-icon-512.png">
+    <link rel="preload" href="/offline.html" as="document" crossorigin="anonymous">
+
+    <!-- Favicon for Browsers -->
+    <link rel="icon" href="/assets/images/app-icon-192.png" sizes="192x192" type="image/png">
+    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            line-height: 1.6;
+            padding-bottom: 20px;
+            position: relative;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px);
+            z-index: -1;
+        }
+        /* Header Styles (Compact, Admin-Only) */
+        #header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 0.25rem 0;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            transition: transform 0.3s ease;
+            height: 60px;
+        }
+        #header.hidden {
+            transform: translateY(-100%);
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 0 0.75rem;
+            color: #d4af37;
+        }
+        .logo-container:hover h1 {
+            text-decoration: underline;
+        }
+        .logo-container img {
+            height: 40px;
+            width: auto;
+            margin-right: 0.5rem;
+            border-radius: 50%;
+        }
+        .logo-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin: 0;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        .back-btn {
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            font-size: 0.9rem;
+        }
+        .back-btn:hover {
+            background: #d4af37;
+            color: #000;
+            transform: translateY(-1px);
+        }
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+            z-index: 1002;
+        }
+        .menu-toggle:hover {
+            color: #d4af37;
+        }
+        @media (max-width: 768px) {
+            #header {
+                padding: 0.5rem;
+                flex-wrap: wrap;
+            }
+            .logo-container {
+                padding: 0 0.5rem;
+            }
+            .logo-title {
+                font-size: 1rem;
+            }
+            .header-actions {
+                padding-right: 0.5rem;
+                gap: 0.5rem;
+            }
+            .back-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+        /* Admin Navigation Menu (Slide-In from Right) */
+        .admin-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .admin-nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .admin-nav-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a1a;
+            padding: 1rem;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1001;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+        }
+        .admin-nav-menu.active {
+            right: 0;
+        }
+        .admin-nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+            margin-bottom: 1rem;
+        }
+        .admin-nav-title {
+            font-size: 1.125rem;
+            color: #d4af37;
+            font-weight: 700;
+        }
+        .close-menu {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-menu:hover {
+            color: #d4af37;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .admin-menu {
+            list-style: none;
+            padding: 0;
+        }
+        .admin-menu li {
+            margin-bottom: 0.5rem;
+        }
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #BDBDBD;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin: 0.25rem 0;
+        }
+        .admin-menu a:hover, .admin-menu a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border-right: 3px solid #d4af37;
+            transform: translateX(5px);
+        }
+        .admin-menu i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            opacity: 0.7;
+        }
+        .admin-menu a:hover i, .admin-menu a.active i {
+            opacity: 1;
+        }
+        .signout-btn {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            background: #ff6b6b;
+            color: #fff;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.3s ease;
+            width: calc(100% - 2rem);
+        }
+        .signout-btn:hover {
+            background: #ff5252;
+            transform: translateY(-1px);
+        }
+        /* Main Content */
+        .main-content {
+            padding: 1.5rem;
+            margin-top: 60px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+        }
+        .page-title h1 {
+            font-size: 1.75rem;
+            color: #d4af37;
+            margin-bottom: 0.25rem;
+        }
+        .page-title p {
+            color: #BDBDBD;
+            font-size: 0.875rem;
+        }
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: #d4af37;
+            color: #000;
+        }
+        .btn-primary:hover {
+            background: #b8962e;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #333;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #444;
+            transform: translateY(-1px);
+        }
+        /* Vehicle Details Container */
+        .vehicle-details-container {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            border: 1px solid #333;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+        .vehicle-header {
+            background: rgba(42, 42, 42, 0.9);
+            padding: 1.5rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .vehicle-main-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .vehicle-icon {
+            font-size: 3rem;
+            color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .vehicle-title {
+            font-size: 1.5rem;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .vehicle-subtitle {
+            color: #BDBDBD;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .vehicle-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+        .edit-btn {
+            background: #d4af37;
+            color: #000;
+        }
+        .edit-btn:hover {
+            background: #b8962e;
+            transform: translateY(-1px);
+        }
+        .delete-btn {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        .delete-btn:hover {
+            background: #ff5252;
+            transform: translateY(-1px);
+        }
+        .save-btn {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        .save-btn:hover {
+            background: rgba(76, 175, 80, 0.3);
+        }
+        .cancel-btn {
+            background: rgba(158, 158, 158, 0.2);
+            color: #9E9E9E;
+            border: 1px solid #9E9E9E;
+        }
+        .cancel-btn:hover {
+            background: rgba(158, 158, 158, 0.3);
+        }
+        /* Details Sections */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+        .detail-section {
+            background: rgba(42, 42, 42, 0.8);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #333;
+        }
+        .detail-section h3 {
+            color: #d4af37;
+            font-size: 1.125rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            color: #BDBDBD;
+            font-size: 0.9rem;
+            font-weight: 500;
+            min-width: 120px;
+        }
+        .detail-value {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: right;
+            word-break: break-word;
+            flex: 1;
+        }
+        .detail-value input, .detail-value select, .detail-value textarea {
+            background: rgba(18, 18, 18, 0.9);
+            border: 1px solid #d4af37;
+            color: #fff;
+            padding: 0.5rem;
+            border-radius: 4px;
+            width: 100%;
+            max-width: 250px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+        .detail-value input:focus, .detail-value select:focus, .detail-value textarea:focus {
+            outline: none;
+            border-color: #fff;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+        .detail-value textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .status-display {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        .status-active {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        .status-inactive {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+        .owner-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #d4af37;
+            font-size: 1.2rem;
+            color: #d4af37;
+        }
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #BDBDBD;
+        }
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            display: block;
+        }
+        .no-vehicle {
+            text-align: center;
+            padding: 3rem;
+            color: #BDBDBD;
+        }
+        .no-vehicle i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            display: block;
+        }
+        .edit-mode .detail-value {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+                margin-top: 50px;
+            }
+            .vehicle-header {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: center;
+            }
+            .details-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+            .detail-value input, .detail-value select, .detail-value textarea {
+                width: 100%;
+            }
+            .vehicle-actions {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (Compact, Admin-Only) -->
+    <header id="header">
+        <a href="admin-vehicles.html" class="logo-container">
+            <img src="images/logo.png" alt="Top Autocare Logo" style="height: 40px; width: auto;">
+            <h1 class="logo-title">Vehicle Details</h1>
+        </a>
+        
+        <div class="header-actions">
+            <button class="menu-toggle" onclick="toggleAdminMenu()" title="Admin Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            <a href="admin-vehicles.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Vehicles
+            </a>
+        </div>
+    </header>
+
+    <!-- Admin Navigation Menu (Exact Match from admin-vehicles.html) -->
+    <div class="admin-nav-overlay" onclick="toggleAdminMenu()">
+        <div class="admin-nav-menu" onclick="event.stopPropagation()">
+            <div class="admin-nav-header">
+                <h2 class="admin-nav-title">Admin Menu</h2>
+                <button class="close-menu" onclick="toggleAdminMenu()">&times;</button>
+            </div>
+            
+            <ul class="admin-menu">
+                <li><a href="admin.html" onclick="toggleAdminMenu()"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="admin-users.html" onclick="toggleAdminMenu()"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="admin-appointments.html" onclick="toggleAdminMenu()"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                <li><a href="admin-services.html" onclick="toggleAdminMenu()"><i class="fas fa-wrench"></i> Services</a></li>
+                <li><a href="admin-vehicles.html" class="active" onclick="toggleAdminMenu()"><i class="fas fa-car"></i> Vehicles</a></li>
+                <li><a href="admin-reports.html" onclick="toggleAdminMenu()"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="admin-settings.html" onclick="toggleAdminMenu()"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="admin-profile.html" onclick="toggleAdminMenu()"><i class="fas fa-user-cog"></i> Admin Profile</a></li>
+                <li><a href="admin-notifications.html" onclick="toggleAdminMenu()"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="admin-faq.html" onclick="toggleAdminMenu()"><i class="fas fa-question-circle"></i> FAQ Management</a></li>
+                <li><a href="admin-analytics.html" onclick="toggleAdminMenu()"><i class="fas fa-chart-pie"></i> Analytics</a></li>
+                <li><a href="admin-backup.html" onclick="toggleAdminMenu()"><i class="fas fa-database"></i> Backup & Restore</a></li>
+                <li><a href="admin.html" onclick="toggleAdminMenu()"><i class="fas fa-arrow-left"></i> Back to Site</a></li>
+            </ul>
+            
+            <!-- Working Sign Out Button (Bottom) -->
+            <button class="signout-btn" onclick="signOut()">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div class="page-title">
+                <h1 id="vehicleTitle">Vehicle Details</h1>
+                <p id="vehicleSubtitle">Loading vehicle information...</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="refreshVehicle()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <!-- Vehicle Details Container -->
+        <div id="vehicleDetailsContainer" class="vehicle-details-container" style="display: none;">
+            <!-- Content loaded dynamically -->
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading" style="display: block;">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading vehicle details...</p>
+        </div>
+
+        <!-- No Vehicle Found State -->
+        <div id="noVehicleState" class="no-vehicle" style="display: none;">
+            <i class="fas fa-car"></i>
+            <h3>Vehicle Not Found</h3>
+            <p>The requested vehicle could not be located. It may have been deleted or the ID is invalid.</p>
+            <a href="admin-vehicles.html" class="btn btn-primary" style="margin-top: 1rem; display: inline-block;">
+                <i class="fas fa-arrow-left"></i> Back to Vehicles
+            </a>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { 
+            getFirestore, 
+            doc, 
+            getDoc, 
+            onSnapshot, 
+            updateDoc, 
+            deleteDoc,
+            serverTimestamp 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkVYS0CaKe1kHPp9GVnURiZz5WP5tE3iM",
+            authDomain: "top-autocare.firebaseapp.com",
+            projectId: "top-autocare",
+            storageBucket: "top-autocare.firebasestorage.app",
+            messagingSenderId: "879247821822",
+            appId: "1:879247821822:web:e6a418395d52aac99a4eaf",
+            measurementId: "G-T5NDM5M33Z"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentVehicleId = null;
+        let vehicleUnsubscribe = null;
+        let editMode = false;
+
+        // DOM Elements
+        const vehicleTitle = document.getElementById('vehicleTitle');
+        const vehicleSubtitle = document.getElementById('vehicleSubtitle');
+        const messageContainer = document.getElementById('messageContainer');
+        const vehicleDetailsContainer = document.getElementById('vehicleDetailsContainer');
+        const loadingState = document.getElementById('loadingState');
+        const noVehicleState = document.getElementById('noVehicleState');
+
+        // Utility Functions
+        function showMessage(message, type = 'info') {
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info';
+            messageContainer.innerHTML = `
+                <div class="message ${className}">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => messageContainer.innerHTML = '', 3000);
+        }
+
+        // Get Status Badge
+        function getStatusBadge(status) {
+            switch (status) {
+                case 'active':
+                    return '<span class="status-display status-active">Active</span>';
+                case 'inactive':
+                    return '<span class="status-display status-inactive">Inactive</span>';
+                case 'maintenance':
+                    return '<span class="status-display" style="background: rgba(255, 193, 7, 0.2); color: #FFC107; border: 1px solid #FFC107;">In Maintenance</span>';
+                default:
+                    return '<span class="status-display status-active">Active</span>';
+            }
+        }
+
+        // Toggle Edit Mode
+        window.toggleEditMode = () => {
+            editMode = !editMode;
+            const container = document.querySelector('.vehicle-details-container');
+            if (editMode) {
+                container.classList.add('edit-mode');
+                document.querySelectorAll('.detail-value input, .detail-value select, .detail-value textarea').forEach(el => el.disabled = false);
+                document.querySelectorAll('.edit-btn, .delete-btn').forEach(btn => btn.style.display = 'none');
+                document.querySelector('.save-btn').style.display = 'inline-flex';
+                document.querySelector('.cancel-btn').style.display = 'inline-flex';
+                showMessage('Edit mode enabled. Make changes and click Save.', 'info');
+            } else {
+                container.classList.remove('edit-mode');
+                document.querySelectorAll('.detail-value input, .detail-value select, .detail-value textarea').forEach(el => el.disabled = true);
+                document.querySelectorAll('.edit-btn, .delete-btn').forEach(btn => btn.style.display = 'inline-flex');
+                document.querySelector('.save-btn').style.display = 'none';
+                document.querySelector('.cancel-btn').style.display = 'none';
+            }
+        };
+
+        // Save Changes
+        window.saveChanges = async () => {
+            if (!currentVehicleId) return;
+
+            const updates = {
+                make: document.getElementById('make').value.trim(),
+                model: document.getElementById('model').value.trim(),
+                year: parseInt(document.getElementById('year').value),
+                color: document.getElementById('color').value.trim(),
+                licensePlate: document.getElementById('licensePlate').value.trim().toUpperCase(),
+                mileage: parseInt(document.getElementById('mileage').value),
+                vin: document.getElementById('vin').value.trim().toUpperCase(),
+                status: document.getElementById('status').value,
+                notes: document.getElementById('notes').value.trim()
+            };
+
+            // Validate required fields
+            if (!updates.make || !updates.model || !updates.licensePlate || !updates.vin || 
+                isNaN(updates.year) || isNaN(updates.mileage) || updates.year < 1900 || 
+                updates.mileage < 0 || updates.vin.length < 17) {
+                showMessage('Please fill in all required fields correctly (e.g., VIN 17 chars, valid year/mileage).', 'error');
+                return;
+            }
+
+            const saveBtn = document.querySelector('.save-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            try {
+                await updateDoc(doc(db, 'vehicles', currentVehicleId), {
+                    ...updates,
+                    updatedAt: serverTimestamp()
+                });
+                showMessage('Vehicle updated successfully!', 'success');
+                toggleEditMode(); // Exit edit mode
+                loadVehicleDetails(); // Reload to show updates
+            } catch (error) {
+                console.error('Error saving changes:', error);
+                if (error.code === 'permission-denied') {
+                    showMessage('Permission denied. Admin access required.', 'error');
+                    setTimeout(() => window.location.href = 'admin.html', 2000);
+                } else {
+                    showMessage('Error saving changes. Please try again.', 'error');
+                }
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        };
+
+        // Cancel Changes
+        window.cancelChanges = () => {
+            if (confirm('Discard changes?')) {
+                toggleEditMode(); // Exit edit mode
+                loadVehicleDetails(); // Reload original data
+            }
+        };
+
+        // Delete Vehicle
+        window.deleteVehicleConfirm = async () => {
+            if (!currentVehicleId || confirm('Are you sure you want to delete this vehicle? This action cannot be undone and will remove it from the owner\'s list.')) {
+                const deleteBtn = document.querySelector('.delete-btn');
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+
+                try {
+                    await deleteDoc(doc(db, 'vehicles', currentVehicleId));
+                    showMessage('Vehicle deleted successfully!', 'success');
+                    setTimeout(() => window.location.href = 'admin-vehicles.html', 1500);
+                } catch (error) {
+                    console.error('Error deleting vehicle:', error);
+                    if (error.code === 'permission-denied') {
+                        showMessage('Permission denied. Admin access required.', 'error');
+                    } else {
+                        showMessage('Error deleting vehicle. Please try again.', 'error');
+                    }
+                } finally {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = '<i class="fas fa-trash"></i> Delete Vehicle';
+                }
+            }
+        };
+
+        // Refresh Vehicle Details
+        window.refreshVehicle = () => {
+            loadVehicleDetails();
+            showMessage('Vehicle details refreshed.', 'success');
+        };
+
+        // Load Vehicle Details (Real-time sync)
+        async function loadVehicleDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            currentVehicleId = urlParams.get('id');
+
+            if (!currentVehicleId) {
+                loadingState.style.display = 'none';
+                noVehicleState.style.display = 'block';
+                return;
+            }
+
+            if (vehicleUnsubscribe) vehicleUnsubscribe();
+
+            const vehicleRef = doc(db, 'vehicles', currentVehicleId);
+            vehicleUnsubscribe = onSnapshot(vehicleRef, async (vehicleDoc) => {
+                if (!vehicleDoc.exists()) {
+                    loadingState.style.display = 'none';
+                    noVehicleState.style.display = 'block';
+                    return;
+                }
+
+                const vehicleData = vehicleDoc.data();
+                const userId = vehicleData.userId;
+
+                // Fetch owner details (rules-compliant: admin read)
+                let ownerName = 'Unknown User';
+                let ownerEmail = 'N/A';
+                let ownerPhone = 'N/A';
+                if (userId) {
+                    try {
+                        const userRef = doc(db, 'users', userId);
+                        const userSnap = await getDoc(userRef);
+                        if (userSnap.exists()) {
+                            const userData = userSnap.data();
+                            ownerName = userData.fullName || userData.displayName || userData.email || 'Unknown User';
+                            ownerEmail = userData.email || 'N/A';
+                            ownerPhone = userData.phone || 'N/A';
+                        }
+                    } catch (error) {
+                        console.error('Error fetching owner:', error);
+                    }
+                }
+
+                // Update title and subtitle
+                vehicleTitle.textContent = `${vehicleData.make || 'N/A'} ${vehicleData.model || 'N/A'} (${vehicleData.year || 'N/A'})`;
+                vehicleSubtitle.innerHTML = `
+                    <i class="fas fa-user"></i> Owner: ${ownerName} | 
+                    <i class="fas fa-hashtag"></i> ID: ${currentVehicleId.substring(0, 8)}...
+                `;
+
+                // Render details
+                renderVehicleDetails(vehicleData, ownerName, ownerEmail, ownerPhone);
+
+                loadingState.style.display = 'none';
+                vehicleDetailsContainer.style.display = 'block';
+                noVehicleState.style.display = 'none';
+
+                // Reset edit mode
+                editMode = false;
+                toggleEditMode(); // Ensures clean state
+            }, (error) => {
+                console.error('Error loading vehicle:', error);
+                if (error.code === 'permission-denied') {
+                    showMessage('Permission denied. Admin access required.', 'error');
+                    setTimeout(() => window.location.href = 'admin.html', 2000);
+                } else {
+                    showMessage('Error loading vehicle details.', 'error');
+                }
+                loadingState.style.display = 'none';
+                noVehicleState.style.display = 'block';
+            });
+        }
+
+        // Render Vehicle Details
+        function renderVehicleDetails(vehicle, ownerName, ownerEmail, ownerPhone) {
+            vehicleDetailsContainer.innerHTML = `
+                <div class="vehicle-header">
+                    <div class="vehicle-main-info">
+                        <div class="vehicle-icon">
+                            <i class="fas fa-car-side"></i>
+                        </div>
+                        <div>
+                            <h2 class="vehicle-title">${vehicle.make || 'N/A'} ${vehicle.model || 'N/A'}</h2>
+                            <p class="vehicle-subtitle">
+                                ${vehicle.year ? `Year: ${vehicle.year}` : ''} | 
+                                ${vehicle.color ? `Color: ${vehicle.color}` : ''} | 
+                                <span style="color: #d4af37;">${getStatusBadge(vehicle.status || 'active')}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="vehicle-actions">
+                        <button class="action-btn edit-btn" onclick="toggleEditMode()">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="action-btn delete-btn" onclick="deleteVehicleConfirm()">
+                            <i class="fas fa-trash"></i> Delete Vehicle
+                        </button>
+                        <button class="action-btn save-btn" onclick="saveChanges()" style="display: none;">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        <button class="action-btn cancel-btn" onclick="cancelChanges()" style="display: none;">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                    </div>
+                </div>
+
+                <div class="details-grid">
+                    <!-- Owner Section -->
+                    <div class="detail-section">
+                        <h3><i class="fas fa-user"></i> Owner Information</h3>
+                        <div class="detail-row">
+                            <span class="detail-label">Full Name:</span>
+                            <span class="detail-value">${ownerName}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Email:</span>
+                            <span class="detail-value">${ownerEmail}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Phone:</span>
+                            <span class="detail-value">${ownerPhone}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">User ID:</span>
+                            <span class="detail-value">${vehicle.userId || 'N/A'}</span>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Basics -->
+                    <div class="detail-section">
+                        <h3><i class="fas fa-car"></i> Vehicle Basics</h3>
+                        <div class="detail-row">
+                            <span class="detail-label">Make <span style="color: #ff6b6b;">*</span>:</span>
+                            <span class="detail-value">
+                                <input type="text" id="make" value="${vehicle.make || ''}" disabled required>
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Model <span style="color: #ff6b6b;">*</span>:</span>
+                            <span class="detail-value">
+                                <input type="text" id="model" value="${vehicle.model || ''}" disabled required>
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Year <span style="color: #ff6b6b;">*</span>:</span>
+                            <span class="detail-value">
+                                <input type="number" id="year" value="${vehicle.year || ''}" min="1900" max="${new Date().getFullYear() + 1}" disabled required>
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Color:</span>
+                            <span class="detail-value">
+                                <input type="text" id="color" value="${vehicle.color || ''}" disabled>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Registration & Technical -->
+                    <div class="detail-section">
+                        <h3><i class="fas fa-id-card"></i> Registration & Technical</h3>
+                        <div class="detail-row">
+                            <span class="detail-label">License Plate <span style="color: #ff6b6b;">*</span>:</span>
+                            <span class="detail-value">
+                                <input type="text" id="licensePlate" value="${vehicle.licensePlate || ''}" disabled required>
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Mileage <span style="color: #ff6b6b;">*</span>:</span>
+                            <span class="detail-value">
+                                <input type="number" id="mileage" value="${vehicle.mileage || ''}" min="0" disabled required>
+                                <span style="margin-left: 0.5rem; color: #BDBDBD;">km</span>
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">VIN <span style="color: #ff6b6b;">*</span>:</span>
+                            <span class="detail-value">
+                                <input type="text" id="vin" value="${vehicle.vin || ''}" disabled required maxlength="17">
+                            </span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Status <span style="color: #ff6b6b;">*</span>:</span>
+                            <span class="detail-value">
+                                ${getStatusBadge(vehicle.status || 'active')}
+                                <select id="status" disabled required style="margin-left: 0.5rem;">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="maintenance">In Maintenance</option>
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="detail-section">
+                        <h3><i class="fas fa-sticky-note"></i> Additional Information</h3>
+                        <div class="detail-row">
+                            <span class="detail-label">Created:</span>
+                            <span class="detail-value">${vehicle.createdAt ? new Date(vehicle.createdAt.toDate()).toLocaleString() : 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Last Updated:</span>
+                            <span class="detail-value">${vehicle.updatedAt ? new Date(vehicle.updatedAt.toDate()).toLocaleString() : 'N/A'}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Notes:</span>
+                            <span class="detail-value">
+                                <p id="notes-display" style="margin: 0; white-space: pre-wrap; max-width: 300px;">${vehicle.notes || 'No notes available.'}</p>
+                                <textarea id="notes" disabled rows="4" placeholder="Enter notes about this vehicle..." style="display: none;"></textarea>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // FIXED: Global Navigation Toggle (Exact Match)
+        window.toggleAdminMenu = () => {
+            const overlay = document.querySelector('.admin-nav-overlay');
+            const menu = document.querySelector('.admin-nav-menu');
+            if (overlay && menu) {
+                overlay.classList.toggle('active');
+                menu.classList.toggle('active');
+            }
+        };
+
+        // Working Sign Out (Global - Exact Match)
+        window.signOut = async () => {
+            if (confirm('Are you sure you want to sign out?')) {
+                try {
+                    if (vehicleUnsubscribe) vehicleUnsubscribe();
+                    await signOut(auth);
+                    showMessage('Signed out successfully!', 'success');
+                    setTimeout(() => window.location.href = 'signin.html', 1500);
+                } catch (error) {
+                    console.error('Sign out error:', error);
+                    showMessage('Error signing out. Please try again.', 'error');
+                }
+            }
+        };
+
+        // Admin Check and Initialization
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                
+                const userRef = doc(db, 'users', user.uid);
+                const userSnap = await getDoc(userRef);
+                
+                if (userSnap.exists() && (userSnap.data().role === 'admin' || userSnap.data().isAdmin)) {
+                    loadVehicleDetails();
+                } else {
+                    showMessage('Access denied. Admin privileges required.', 'error');
+                    setTimeout(() => window.location.href = 'dashboard.html', 2000);
+                }
+            } else {
+                window.location.href = 'signin.html';
+            }
+        });
+
+        // Cleanup Listener
+        window.addEventListener('beforeunload', () => {
+            if (vehicleUnsubscribe) vehicleUnsubscribe();
+        });
+
+        console.log('Admin Vehicle Details loaded with Firebase integration');
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered');
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker error:', error);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Auto-hide Header on Scroll -->
+    <script>
+        let lastScrollTop = 0;
+        const header = document.getElementById('header');
+
+        window.addEventListener('scroll', () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                if (header) header.classList.add('hidden');
+            } else {
+                if (header) header.classList.remove('hidden');
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+    </script>
+<script src="analytics.js"></script>
+<script src="offline-db.js"></script>
+<script src="performance-monitor.js"></script>
+<script src="error-handler.js"></script>
+<script src="service-worker-manager.js"></script>
+</body>
+</html>

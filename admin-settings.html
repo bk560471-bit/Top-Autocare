@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Top Autocare Garage</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest and Mobile Optimization -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="msapplication-TileColor" content="#d4af37">
+    <meta name="application-name" content="Top Autocare">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+
+    <!-- Mobile/PWA Meta Tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Top Autocare">
+    <link rel="apple-touch-icon" href="/assets/images/app-icon-192.png">
+    <link rel="preload" href="/offline.html" as="document" crossorigin="anonymous">
+
+    <!-- Favicon for Browsers -->
+    <link rel="icon" href="/assets/images/app-icon-192.png" sizes="192x192" type="image/png">
+    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            line-height: 1.6;
+            padding-bottom: 0; /* Removed padding for no bottom nav */
+            position: relative;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px);
+            z-index: -1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            padding: 20px;
+        }
+        /* Header Styles (Compact, Notification Bell Removed) */
+        #header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 0.25rem 0;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            transition: transform 0.3s ease;
+            height: 60px;
+        }
+        #header.hidden {
+            transform: translateY(-100%);
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 0 0.75rem;
+            color: #d4af37;
+        }
+        .logo-container:hover h1 {
+            text-decoration: underline;
+        }
+        .logo-container img {
+            height: 40px;
+            width: auto;
+            margin-right: 0.5rem;
+            border-radius: 50%;
+        }
+        .logo-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin: 0;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+            z-index: 1002;
+        }
+        .menu-toggle:hover {
+            color: #d4af37;
+        }
+        @media (max-width: 768px) {
+            #header {
+                padding: 0.5rem;
+                flex-wrap: wrap;
+            }
+            .logo-container {
+                padding: 0 0.5rem;
+            }
+            .logo-title {
+                font-size: 1rem;
+            }
+            .header-actions {
+                padding-right: 0.5rem;
+                gap: 0.5rem;
+            }
+        }
+        /* Admin Navigation Menu (Matching Photo Exactly: Icons, Order, Active on Settings) */
+        .admin-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .admin-nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .admin-nav-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a1a;
+            padding: 1rem;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1001;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+        }
+        .admin-nav-menu.active {
+            right: 0;
+        }
+        .admin-nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+            margin-bottom: 1rem;
+        }
+        .admin-nav-title {
+            font-size: 1.125rem;
+            color: #d4af37;
+            font-weight: 700;
+        }
+        .close-menu {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-menu:hover {
+            color: #d4af37;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .admin-menu {
+            list-style: none;
+            padding: 0;
+        }
+        .admin-menu li {
+            margin-bottom: 0.5rem;
+        }
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #BDBDBD;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin: 0.25rem 0;
+        }
+        .admin-menu a:hover, .admin-menu a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border-right: 3px solid #d4af37;
+            transform: translateX(5px);
+        }
+        .admin-menu i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            opacity: 0.7;
+        }
+        .admin-menu a:hover i, .admin-menu a.active i {
+            opacity: 1;
+        }
+        .signout-btn {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            background: #ff6b6b;
+            color: #fff;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.3s ease;
+            width: calc(100% - 2rem);
+        }
+        .signout-btn:hover {
+            background: #ff5252;
+            transform: translateY(-1px);
+        }
+        /* Main Content */
+        .main-content {
+            padding: 1.5rem;
+            margin-top: 60px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+        }
+        .page-title h1 {
+            font-size: 1.75rem;
+            color: #d4af37;
+            margin-bottom: 0.25rem;
+        }
+        .page-title p {
+            color: #BDBDBD;
+            font-size: 0.875rem;
+        }
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: #d4af37;
+            color: #000;
+        }
+        .btn-primary:hover {
+            background: #b8962e;
+        }
+        .btn-secondary {
+            background: #333;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #444;
+        }
+        /* Settings Content */
+        .settings-content {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            border: 1px solid #333;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .settings-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-bottom: 1px solid #333;
+        }
+        .settings-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .settings-section h3 {
+            color: #d4af37;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .settings-section .section-info {
+            color: #BDBDBD;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            border-left: 3px solid #d4af37;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+        }
+        .form-group label {
+            font-size: 0.875rem;
+            color: #d4af37;
+            font-weight: 500;
+        }
+        .form-group input, .form-group textarea {
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid #333;
+            background: #121212;
+            color: #fff;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+        }
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .form-group .validation-error {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .form-group.invalid input, .form-group.invalid textarea {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+        }
+        .form-group.invalid .validation-error {
+            display: block;
+        }
+        .form-actions {
+            grid-column: span 2;
+            display: flex;
+            gap: 0.75rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #333;
+        }
+        .btn-large {
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+        }
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #BDBDBD;
+            font-style: italic;
+            background: rgba(18, 18, 18, 0.8);
+            border-radius: 6px;
+            border: 1px solid #333;
+        }
+        .contact-preview {
+            background: rgba(18, 18, 18, 0.8);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border: 1px solid #333;
+        }
+        .contact-preview h4 {
+            color: #d4af37;
+            margin-bottom: 0.5rem;
+        }
+        .contact-preview p {
+            color: #BDBDBD;
+            margin: 0.25rem 0;
+            font-size: 0.9rem;
+        }
+        #messageContainer {
+            margin-bottom: 1rem;
+            z-index: 1000;
+            position: relative;
+        }
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            max-width: 100%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+        }
+        .message.info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+            border: 1px solid #2196F3;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-actions {
+                grid-column: span 1;
+                flex-direction: column;
+            }
+        }
+        /* Add offline notification styles */
+        .offline-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ff6b6b;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        .offline-notification.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @media (max-width: 768px) {
+            .offline-notification {
+                bottom: 80px; /* Above bottom nav */
+                right: 10px;
+                left: 10px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header (Notification Bell Removed) -->
+    <header id="header">
+        <a href="admin.html" class="logo-container">
+            <img src="images/logo.png" alt="Top Autocare Logo" style="height: 40px; width: auto;">
+            <h1 class="logo-title">Admin Panel</h1>
+        </a>
+        
+        <div class="header-actions">
+            <!-- Only Menu Toggle - Notification Bell Removed -->
+            <button class="menu-toggle" onclick="toggleAdminMenu()" title="Admin Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Admin Navigation Menu (Updated: Added Profile, Matching Exact Order and Icons) -->
+    <div class="admin-nav-overlay" onclick="toggleAdminMenu()">
+        <div class="admin-nav-menu" onclick="event.stopPropagation()">
+            <div class="admin-nav-header">
+                <h2 class="admin-nav-title">Admin Menu</h2>
+                <button class="close-menu" onclick="toggleAdminMenu()">&times;</button>
+            </div>
+            
+            <ul class="admin-menu">
+                <li><a href="admin.html" onclick="toggleAdminMenu()"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="admin-users.html" onclick="toggleAdminMenu()"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="admin-appointments.html" onclick="toggleAdminMenu()"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                <li><a href="admin-services.html" onclick="toggleAdminMenu()"><i class="fas fa-wrench"></i> Services</a></li>
+                <li><a href="admin-vehicles.html" onclick="toggleAdminMenu()"><i class="fas fa-car"></i> Vehicles</a></li>
+                <li><a href="admin-reports.html" onclick="toggleAdminMenu()"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="admin-settings.html" class="active" onclick="toggleAdminMenu()"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="admin-profile.html" onclick="toggleAdminMenu()"><i class="fas fa-user-cog"></i> Admin Profile</a></li>
+                <li><a href="admin-notifications.html" onclick="toggleAdminMenu()"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="admin-faq.html" onclick="toggleAdminMenu()"><i class="fas fa-question-circle"></i> FAQ Management</a></li>
+                <li><a href="admin-analytics.html" onclick="toggleAdminMenu()"><i class="fas fa-chart-pie"></i> Analytics</a></li>
+                <li><a href="admin-backup.html" onclick="toggleAdminMenu()"><i class="fas fa-database"></i> Backup & Restore</a></li>
+                <li><a href="admin.html" onclick="toggleAdminMenu()"><i class="fas fa-arrow-left"></i> Back to Site</a></li>
+            </ul>
+            
+            <!-- Working Sign Out Button (Bottom, Matching Previous Pages) -->
+            <button class="signout-btn" onclick="signOut()">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div class="page-title">
+                <h1>System Settings</h1>
+                <p>Configure business information and contact details</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" onclick="loadSettings()">
+                    <i class="fas fa-refresh"></i> Reload Settings
+                </button>
+            </div>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <div class="settings-content">
+            <!-- Business & Contact Settings -->
+            <div class="settings-section">
+                <h3><i class="fas fa-building"></i> Business & Contact Information</h3>
+                <p class="section-info">These settings control the contact information displayed on your public website. Changes will be reflected immediately on the contact page.</p>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="businessName">Business Name <span style="color: #ff6b6b;">*</span></label>
+                        <input type="text" id="businessName" placeholder="Top Autocare Garage" required>
+                        <div class="validation-error">Business name is required</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="businessEmail">Business Email <span style="color: #ff6b6b;">*</span></label>
+                        <input type="email" id="businessEmail" placeholder="bk560471@gmail.com" required>
+                        <div class="validation-error">Please enter a valid email address</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="businessPhone">Business Phone <span style="color: #ff6b6b;">*</span></label>
+                        <input type="tel" id="businessPhone" placeholder="+254 757 562 447" required>
+                        <div class="validation-error">Please enter a valid phone number</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="businessAddress">Business Address</label>
+                        <input type="text" id="businessAddress" placeholder="Industrial Area, Nairobi, Kenya">
+                    </div>
+                    <div class="form-group">
+                        <label for="businessHours">Business Hours</label>
+                        <textarea id="businessHours" placeholder="Mon-Fri: 8AM-6PM, Sat: 8AM-4PM, Sun: Closed"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="whatsappNumber">WhatsApp Number <span style="color: #ff6b6b;">*</span></label>
+                        <input type="tel" id="whatsappNumber" placeholder="+254 757 562 447" required>
+                        <div class="validation-error">Please enter a valid WhatsApp number</div>
+                        <small style="color: #BDBDBD; font-size: 0.8rem;">Format: +254 757 562 447</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="twitterHandle">Twitter Handle</label>
+                        <input type="text" id="twitterHandle" placeholder="@BrianVags">
+                        <small style="color: #BDBDBD; font-size: 0.8rem;">Include @ symbol (e.g., @BrianVags)</small>
+                    </div>
+                </div>
+
+                <!-- Contact Preview -->
+                <div class="contact-preview">
+                    <h4><i class="fas fa-eye"></i> Live Preview (Contact Page)</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                        <div>
+                            <strong>Phone:</strong> <span id="previewPhone">Loading...</span>
+                        </div>
+                        <div>
+                            <strong>Email:</strong> <span id="previewEmail">Loading...</span>
+                        </div>
+                        <div>
+                            <strong>WhatsApp:</strong> <span id="previewWhatsApp">Loading...</span>
+                        </div>
+                        <div>
+                            <strong>Twitter:</strong> <span id="previewTwitter">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Send Notification Section -->
+            <div class="settings-section">
+                <h3><i class="fas fa-bell"></i> Send Announcement Notification</h3>
+                <p class="section-info">Send a broadcast notification to all users. This will appear in their notifications immediately for important announcements, promotions, or system updates.</p>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="notificationMessage">Announcement Message <span style="color: #ff6b6b;">*</span></label>
+                        <textarea id="notificationMessage" placeholder="Type your announcement here... (e.g., Garage closed for maintenance on Dec 25th)" required></textarea>
+                        <div class="validation-error">Message is required and must be at least 10 characters</div>
+                        <small style="color: #BDBDBD; font-size: 0.8rem;">Max 500 characters. This will be sent to all users as a system notification.</small>
+                    </div>
+                </div>
+
+                <div class="form-actions" style="grid-column: span 2; justify-content: flex-start;">
+                    <button class="btn btn-primary btn-large" id="sendNotificationBtn">
+                        <i class="fas fa-paper-plane"></i> Send to All Users
+                    </button>
+                </div>
+            </div>
+
+            <!-- Save Actions -->
+            <div class="form-actions">
+                <button class="btn btn-secondary btn-large" onclick="loadDefaultSettings(); showMessage('Settings reset to defaults.', 'info');">
+                    <i class="fas fa-undo"></i> Reset to Defaults
+                </button>
+                <button class="btn btn-primary btn-large" id="saveSettingsBtn">
+                    <i class="fas fa-save"></i> Save All Settings
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Offline Notification (Optional, for PWA feedback) -->
+    <div class="offline-notification" id="offlineNotification">
+        <i class="fas fa-wifi-slash"></i> You are offline. Some features may be limited.
+    </div>
+
+    <!-- Global Navigation Script -->
+    <script>
+        // Global Navigation Functions
+        window.toggleAdminMenu = () => {
+            const overlay = document.querySelector('.admin-nav-overlay');
+            const menu = document.querySelector('.admin-nav-menu');
+            if (overlay && menu) {
+                overlay.classList.toggle('active');
+                menu.classList.toggle('active');
+            }
+        };
+
+        // Auto-hide Navigation on Scroll
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const header = document.getElementById('header');
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                if (header) header.classList.add('hidden');
+            } else {
+                if (header) header.classList.remove('hidden');
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (event) => {
+            const overlay = document.querySelector('.admin-nav-overlay');
+            const menu = document.querySelector('.admin-nav-menu');
+            if (overlay && overlay.classList.contains('active') && 
+                !menu.contains(event.target) && 
+                !event.target.closest('.menu-toggle')) {
+                toggleAdminMenu();
+            }
+        });
+    </script>
+
+    <!-- Firebase SDK - FIXED: Ensured writeBatch import and added better error handling -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, getDoc, setDoc, Timestamp, collection, query, getDocs, addDoc, serverTimestamp, writeBatch, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkVYS0CaKe1kHPp9GVnURiZz5WP5tE3iM",
+            authDomain: "top-autocare.firebaseapp.com",
+            projectId: "top-autocare",
+            storageBucket: "top-autocare.firebasestorage.app",
+            messagingSenderId: "879247821822",
+            appId: "1:879247821822:web:e6a418395d52aac99a4eaf",
+            measurementId: "G-T5NDM5M33Z"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let currentSettings = {};
+
+        // DOM Elements
+        const businessNameInput = document.getElementById('businessName');
+        const businessEmailInput = document.getElementById('businessEmail');
+        const businessPhoneInput = document.getElementById('businessPhone');
+        const businessAddressInput = document.getElementById('businessAddress');
+        const businessHoursInput = document.getElementById('businessHours');
+        const whatsappNumberInput = document.getElementById('whatsappNumber');
+        const twitterHandleInput = document.getElementById('twitterHandle');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const notificationMessageInput = document.getElementById('notificationMessage');
+        const sendNotificationBtn = document.getElementById('sendNotificationBtn');
+        const messageContainer = document.getElementById('messageContainer');
+
+        // Utility Functions
+        function showMessage(message, type = 'info') {
+            messageContainer.innerHTML = `
+                <div class="message ${type}">
+                    <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-times-circle' : 'fa-info-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => messageContainer.innerHTML = '', 3000);
+        }
+
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email.trim());
+        }
+
+        function validatePhoneNumber(phone) {
+            const cleanPhone = phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('254') && cleanPhone.length === 12) {
+                return true;
+            }
+            if (cleanPhone.length >= 9 && cleanPhone.length <= 10) {
+                return true;
+            }
+            return false;
+        }
+
+        function formatPhoneForDisplay(phone) {
+            let cleanPhone = phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('0')) {
+                cleanPhone = '254' + cleanPhone.slice(1);
+            }
+            if (cleanPhone.length === 12 && cleanPhone.startsWith('254')) {
+                return '+' + cleanPhone;
+            }
+            return phone;
+        }
+
+        function updatePreview() {
+            if (document.getElementById('previewPhone')) {
+                document.getElementById('previewPhone').textContent = formatPhoneForDisplay(businessPhoneInput ? businessPhoneInput.value : '') || 'Not set';
+            }
+            if (document.getElementById('previewEmail')) {
+                document.getElementById('previewEmail').textContent = businessEmailInput ? businessEmailInput.value : 'Not set';
+            }
+            if (document.getElementById('previewWhatsApp')) {
+                document.getElementById('previewWhatsApp').textContent = formatPhoneForDisplay(whatsappNumberInput ? whatsappNumberInput.value : '') || 'Not set';
+            }
+            if (document.getElementById('previewTwitter')) {
+                const twit = twitterHandleInput ? twitterHandleInput.value.trim() : '';
+                const formattedTwit = twit.startsWith('@') ? twit : `@${twit}`;
+                document.getElementById('previewTwitter').textContent = formattedTwit || 'Not set';
+            }
+        }
+
+        // Settings Management
+        window.loadSettings = async () => {
+            try {
+                const settingsRef = doc(db, 'settings', 'global');
+                const settingsSnap = await getDoc(settingsRef);
+
+                if (settingsSnap.exists()) {
+                    currentSettings = { ...settingsSnap.data() };
+                    
+                    if (businessNameInput) businessNameInput.value = currentSettings.businessName || 'Top Autocare Garage';
+                    if (businessEmailInput) businessEmailInput.value = currentSettings.businessEmail || 'bk560471@gmail.com';
+                    if (businessPhoneInput) businessPhoneInput.value = currentSettings.businessPhone || '+254 757 562 447';
+                    if (businessAddressInput) businessAddressInput.value = currentSettings.businessAddress || 'Industrial Area, Nairobi, Kenya';
+                    if (businessHoursInput) businessHoursInput.value = currentSettings.businessHours || 'Mon-Fri: 8AM-6PM, Sat: 8AM-4PM, Sun: Closed';
+                    if (whatsappNumberInput) whatsappNumberInput.value = currentSettings.whatsappNumber || '+254 757 562 447';
+                    if (twitterHandleInput) twitterHandleInput.value = currentSettings.twitterHandle || '@BrianVags';
+
+                    updatePreview();
+                    showMessage('Settings loaded successfully!', 'success');
+                } else {
+                    loadDefaultSettings();
+                    showMessage('No settings found. Loaded defaults.', 'info');
+                }
+            } catch (error) {
+                console.error('Error loading settings:', error);
+                showMessage('Error loading settings. Please try again.', 'error');
+                loadDefaultSettings();
+            }
+        };
+
+        function loadDefaultSettings() {
+            if (businessNameInput) businessNameInput.value = 'Top Autocare Garage';
+            if (businessEmailInput) businessEmailInput.value = 'bk560471@gmail.com';
+            if (businessPhoneInput) businessPhoneInput.value = '+254 757 562 447';
+            if (businessAddressInput) businessAddressInput.value = 'Industrial Area, Nairobi, Kenya';
+            if (businessHoursInput) businessHoursInput.value = 'Mon-Fri: 8AM-6PM, Sat: 8AM-4PM, Sun: Closed';
+            if (whatsappNumberInput) whatsappNumberInput.value = '+254 757 562 447';
+            if (twitterHandleInput) twitterHandleInput.value = '@BrianVags';
+            updatePreview();
+        }
+
+        // Save Settings to Firestore
+        async function saveSettings() {
+            try {
+                // Client-side validation
+                if (!businessNameInput.value.trim()) {
+                    showMessage('Business name is required.', 'error');
+                    return;
+                }
+
+                if (!validateEmail(businessEmailInput.value)) {
+                    showMessage('Please enter a valid business email address.', 'error');
+                    return;
+                }
+
+                if (!validatePhoneNumber(businessPhoneInput.value)) {
+                    showMessage('Please enter a valid business phone number (e.g., +254 757 562 447).', 'error');
+                    return;
+                }
+
+                if (!validatePhoneNumber(whatsappNumberInput.value)) {
+                    showMessage('Please enter a valid WhatsApp number (e.g., +254 757 562 447).', 'error');
+                    return;
+                }
+
+                const updatedSettings = {
+                    businessName: businessNameInput.value.trim(),
+                    businessEmail: businessEmailInput.value.trim(),
+                    businessPhone: formatPhoneForDisplay(businessPhoneInput.value.trim()),
+                    businessAddress: businessAddressInput.value.trim(),
+                    businessHours: businessHoursInput.value.trim(),
+                    whatsappNumber: formatPhoneForDisplay(whatsappNumberInput.value.trim()),
+                    twitterHandle: twitterHandleInput.value.trim().startsWith('@') ? twitterHandleInput.value.trim() : `@${twitterHandleInput.value.trim()}`,
+                    updatedAt: Timestamp.now(),
+                    updatedBy: currentUser ? currentUser.uid : null
+                };
+
+                await setDoc(doc(db, 'settings', 'global'), updatedSettings, { merge: true });
+
+                currentSettings = updatedSettings;
+                updatePreview();
+
+                showMessage(`✅ Settings saved successfully for ${updatedSettings.businessName}!`, 'success');
+                
+            } catch (error) {
+                console.error('Error saving settings:', error);
+                let errorMsg = 'Error saving settings: ';
+                if (error.code === 'permission-denied') {
+                    errorMsg += 'Admin write permission denied. Check Firestore rules.';
+                } else {
+                    errorMsg += error.message || 'Please try again.';
+                }
+                showMessage(errorMsg, 'error');
+            }
+        }
+
+// Send Broadcast Notification to All Users - FIXED: Includes UID and better error handling
+async function sendBroadcastNotification() {
+    const message = notificationMessageInput.value.trim();
+    if (!message || message.length < 10) {
+        showMessage('Message must be at least 10 characters long.', 'error');
+        return;
+    }
+    if (message.length > 500) {
+        showMessage('Message cannot exceed 500 characters.', 'error');
+        return;
+    }
+
+    if (!confirm(`Send this announcement to ALL users?\n\n"${message}"\n\nThis cannot be undone.`)) {
+        return;
+    }
+
+    sendNotificationBtn.disabled = true;
+    sendNotificationBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+
+    try {
+        // Get all users with UIDs
+        const usersQuery = query(collection(db, 'users'), where('role', 'in', ['user', 'admin']));
+        const usersSnapshot = await getDocs(usersQuery);
+        
+        // FIX: Include document ID as uid
+        const users = usersSnapshot.docs.map(doc => ({
+            ...doc.data(),
+            uid: doc.id  // This was missing!
+        }));
+
+        if (users.length === 0) {
+            showMessage('No users found to notify.', 'info');
+            return;
+        }
+
+        console.log(`Found ${users.length} users to notify`);
+
+        // Use writeBatch for atomic operation
+        const batch = writeBatch(db);
+        let sentCount = 0;
+
+        users.forEach((user) => {
+            // Create ref for each notification
+            const notificationRef = doc(collection(db, 'notifications'));
+            batch.set(notificationRef, {
+                userId: user.uid,  // Now this works - user.uid is defined
+                title: 'System Announcement',
+                message: message,
+                type: 'announcement',
+                read: false,
+                timestamp: serverTimestamp(),
+                fromAdmin: currentUser ? currentUser.uid : null
+            });
+            sentCount++;
+        });
+
+        // Commit batch atomically
+        await batch.commit();
+        console.log('✅ Batch committed successfully for', sentCount, 'notifications');
+
+        notificationMessageInput.value = '';
+        showMessage(`Announcement sent successfully to ${sentCount} users! They will receive it immediately.`, 'success');
+
+    } catch (error) {
+        console.error('Detailed error in sendBroadcastNotification:', error);
+        let errorMsg = 'Error sending notification: ';
+        
+        if (error.code === 'permission-denied') {
+            errorMsg += 'Admin create permission denied. Check Firestore rules for /notifications create.';
+        } else if (error.message.includes('writeBatch')) {
+            errorMsg += 'Batch write function not available.';
+        } else if (error.message.includes('uid')) {
+            errorMsg += 'User UID not found. Check user query.';
+        } else {
+            errorMsg += error.message || 'Please try again. Check console for details.';
+        }
+        showMessage(errorMsg, 'error');
+
+        // Fallback for debugging
+        if (error.code !== 'permission-denied') {
+            console.warn('Attempting fallback single writes for first 5 users...');
+            let fallbackSent = 0;
+            const firstUsers = users.slice(0, 5);
+            
+            for (const user of firstUsers) {
+                try {
+                    await addDoc(collection(db, 'notifications'), {
+                        userId: user.uid,
+                        title: 'System Announcement (Test)',
+                        message: message,
+                        type: 'announcement',
+                        read: false,
+                        timestamp: serverTimestamp(),
+                        fromAdmin: currentUser ? currentUser.uid : null
+                    });
+                    fallbackSent++;
+                    console.log(`✅ Fallback notification sent to ${user.uid}`);
+                } catch (singleError) {
+                    console.error(`❌ Fallback failed for ${user.uid}:`, singleError);
+                }
+            }
+            
+            if (fallbackSent > 0) {
+                showMessage(`Batch failed but sent to ${fallbackSent} users as test. Check console.`, 'info');
+            }
+        }
+    } finally {
+        sendNotificationBtn.disabled = false;
+        sendNotificationBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Send to All Users';
+    }
+}
+
+        // Event Listeners
+        if (saveSettingsBtn) {
+            saveSettingsBtn.addEventListener('click', saveSettings);
+        }
+
+        if (sendNotificationBtn) {
+            sendNotificationBtn.addEventListener('click', sendBroadcastNotification);
+        }
+
+        // Real-time input validation and preview update
+        [businessNameInput, businessEmailInput, businessPhoneInput, whatsappNumberInput].forEach(input => {
+            if (input) {
+                input.addEventListener('input', () => {
+                    updatePreview();
+
+                    // Validation styling
+                    const parentGroup = input.parentElement;
+                    let isValid = true;
+                    if (input.id === 'businessName' && !input.value.trim()) isValid = false;
+                    if (input.id.includes('Email') && input.value && !validateEmail(input.value)) isValid = false;
+                    if ((input.id.includes('Phone') || input.id.includes('whatsapp')) && input.value && !validatePhoneNumber(input.value)) isValid = false;
+
+                    if (isValid) {
+                        parentGroup.classList.remove('invalid');
+                    } else {
+                        parentGroup.classList.add('invalid');
+                    }
+                });
+            }
+        });
+
+        if (twitterHandleInput) {
+            twitterHandleInput.addEventListener('input', updatePreview);
+        }
+
+        // Initialize Page
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                
+                // Check admin role
+                const userRef = doc(db, 'users', user.uid);
+                const userSnap = await getDoc(userRef);
+                
+                if (userSnap.exists() && userSnap.data().role === 'admin') {
+                    // Admin access granted
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', () => {
+                            loadSettings();
+                        });
+                    } else {
+                        loadSettings();
+                    }
+                } else {
+                    // Permission denied
+                    showMessage('Access denied. Admin role required.', 'error');
+                    setTimeout(() => window.location.href = 'dashboard.html', 2000);
+                }
+            } else {
+                // Not signed in
+                window.location.href = 'signin.html';
+            }
+        });
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered');
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker error:', error);
+                    });
+            });
+        }
+    </script>
+
+    <!-- Offline Detection and Notification -->
+    <script>
+        // Offline Detection and Notification
+        const offlineNotification = document.getElementById('offlineNotification');
+
+        window.addEventListener('online', () => {
+            if (offlineNotification) offlineNotification.classList.remove('show');
+            console.log('Back online');
+        });
+
+        window.addEventListener('offline', () => {
+            if (offlineNotification) offlineNotification.classList.add('show');
+            console.log('Offline');
+        });
+    </script>
+<script src="analytics.js"></script>
+<script src="offline-db.js"></script>
+<script src="performance-monitor.js"></script>
+<script src="error-handler.js"></script>
+<script src="service-worker-manager.js"></script>
+</body>
+</html>

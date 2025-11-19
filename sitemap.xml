@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+
+  <!-- Home Page -->
+  <url>
+    <loc>https://top-autocare.com/</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://top-autocare.com/assets/images/logo.png</image:loc>
+      <image:title>Top Autocare Garage Logo</image:title>
+      <image:caption>Professional Automotive Care in Nairobi</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Services Page -->
+  <url>
+    <loc>https://top-autocare.com/services.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://top-autocare.com/assets/images/services.jpg</image:loc>
+      <image:title>Auto Services</image:title>
+      <image:caption>Routine Maintenance and Repairs</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Book Appointment Page -->
+  <url>
+    <loc>https://top-autocare.com/book-appointment.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://top-autocare.com/assets/images/appointment.jpg</image:loc>
+      <image:title>Book Appointment</image:title>
+      <image:caption>Schedule Your Service Online</image:caption>
+    </image:image>
+  </url>
+
+  <!-- My Vehicles Page (Public Info) -->
+  <url>
+    <loc>https://top-autocare.com/myvehicles.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://top-autocare.com/assets/images/vehicles.jpg</image:loc>
+      <image:title>Manage Vehicles</image:title>
+      <image:caption>Track Your Car Maintenance</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Profile Page (Public Info) -->
+  <url>
+    <loc>https://top-autocare.com/profile.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Notifications Page (Public Info) -->
+  <url>
+    <loc>https://top-autocare.com/notifications.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Sign In Page -->
+  <url>
+    <loc>https://top-autocare.com/signin.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Sign Up Page -->
+  <url>
+    <loc>https://top-autocare.com/signup.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+  <!-- Verify Email Page -->
+  <url>
+    <loc>https://top-autocare.com/verify-email.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+
+  <!-- Privacy Policy -->
+  <url>
+    <loc>https://top-autocare.com/privacy-policy.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Terms of Service -->
+  <url>
+    <loc>https://top-autocare.com/terms-of-service.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.4</priority>
+  </url>
+
+  <!-- Contact/About (Add if exists) -->
+  <url>
+    <loc>https://top-autocare.com/contact.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- FAQ (Add if exists) -->
+  <url>
+    <loc>https://top-autocare.com/faq.html</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- PWA Manifest (Important for App Indexing) -->
+  <url>
+    <loc>https://top-autocare.com/manifest.json</loc>
+    <lastmod>2024-10-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

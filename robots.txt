@@ -1,0 +1,52 @@
+User-agent: *
+# Allow: Public pages and assets (home, services, contact, etc.)
+Allow: /$
+Allow: /index.html
+Allow: /book-appointment.html
+Allow: /services.html
+Allow: /myvehicles.html
+Allow: /profile.html
+Allow: /notifications.html
+Allow: /signin.html
+Allow: /signup.html
+Allow: /verify-email.html
+Allow: /privacy-policy.html
+Allow: /terms-of-service.html
+
+# Disallow: Private/Admin areas (prevents indexing of user dashboards and admin panels)
+Disallow: /admin
+Disallow: /admin-*
+Disallow: /dashboard.html  # User dashboard (behind auth)
+Disallow: /api/           # API endpoints
+Disallow: /assets/        # Internal assets (if sensitive)
+Disallow: /*?             # Query parameters (dynamic user data)
+
+# Allow: PWA essentials (manifest, service worker)
+Allow: /manifest.json
+Allow: /sw.js
+Allow: /offline.html
+
+# Disallow: Other sensitive paths
+Disallow: /config.js
+Disallow: /*.log$
+Disallow: /tmp/
+Disallow: /backup/
+
+# Sitemap: Include if you have one (recommended for SEO)
+Sitemap: https://www.top-autocare.com/sitemap.xml
+
+# User-agent specific (e.g., block aggressive bots if needed)
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Notes for your site:
+# - This allows crawling of public marketing pages while protecting admin/user areas.
+# - For SPA: Search engines will follow client-side routes, but disallow protects sensitive ones.
+# - Update domain in Sitemap URL to match yours (e.g., top-autocare.com).
+# - Test: Use Google Search Console > Coverage or tools like robots.txt Tester.

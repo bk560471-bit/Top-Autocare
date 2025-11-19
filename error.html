@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Error - Top Autocare</title>
+    <meta name="description" content="An error occurred. Let's get you back on track with Top Autocare Garage.">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#d4af37">
+
+    <!-- Mobile/PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Top Autocare">
+    <link rel="apple-touch-icon" href="/assets/images/app-icon-512.png">
+
+    <!-- Favicon for Browsers -->
+    <link rel="icon" href="/assets/images/app-icon-192.png" sizes="192x192" type="image/png">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #001f3f 0%, #003366 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .error-container {
+            max-width: 500px;
+            background: rgba(30, 30, 30, 0.95);
+            border: 2px solid #d4af37;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+        }
+        .error-icon {
+            font-size: 80px;
+            color: #d4af37;
+            margin: 0 auto;
+        }
+        .error-code {
+            font-size: 4em;
+            color: #d4af37;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        h1 {
+            color: #d4af37;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+        }
+        p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        .retry-btn {
+            background: #d4af37;
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        .error-details {
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .contact-info {
+            margin-top: 30px;
+            padding: 20px;
+            border-top: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <div class="error-icon">🔧</div>
+        <h1 id="errorTitle">Oops! Something went wrong</h1>
+        <p id="errorMessage">We're working on fixing the issue. Please try again later.</p>
+        
+        <div class="error-details">
+            <p><strong>Top Autocare Garage</strong></p>
+            <p>Kiambu Road, Nairobi, Kenya</p>
+            <p>Phone: +254 757 562 447</p>
+            <p>Email: info@topautocare.com</p>
+            
+            <button class="retry-btn" onclick="retry()">
+                <i class="fas fa-sync-alt"></i> Retry
+            </button>
+            
+            <button class="retry-btn" onclick="goHome()">
+                <i class="fas fa-home"></i> Go Home
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Get error code from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorCode = urlParams.get('code') || 'Unknown';
+        
+        document.getElementById('errorTitle').textContent = `Error ${errorCode}`;
+        
+        // Set specific messages based on error code
+        const errorMessages = {
+            '400': 'Bad Request - The server cannot process the request',
+            '401': 'Unauthorized - Please sign in',
+            '403': 'Forbidden - Access denied',
+            '404': 'Page Not Found - The requested page doesn't exist'
+            // Add more error codes as needed
+        };
+        
+        document.getElementById('errorMessage').textContent = 
+            errorMessages[errorCode] || 'An unexpected error occurred';
+        
+        function retry() {
+            window.location.reload();
+        }
+        
+        function goHome() {
+            window.location.href = '/';
+        }
+        
+        // Auto-redirect for certain errors
+        if (['401', '403'].includes(errorCode)) {
+            window.location.href = '/signin.html';
+        } else {
+            window.history.back();
+        }
+    </script>
+
+    <!-- Service Worker Registration for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered successfully:', registration);
+                    })
+                    .catch((error) => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+<script src="analytics.js"></script>
+<script src="offline-db.js"></script>
+<script src="performance-monitor.js"></script>
+<script src="error-handler.js"></script>
+<script src="service-worker-manager.js"></script>
+</body>
+</html>

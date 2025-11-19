@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <!-- Windows Live Tiles Configuration for Top Autocare Garage -->
+  <msapplication>
+    <!-- Tile Settings (for pinning to Start menu/taskbar) -->
+    <tile>
+      <!-- Small Square Logo (150x150) - Use app icon -->
+      <square150x150logo src="/assets/images/app-icon-150.png"/>
+      
+      <!-- Medium Square Logo (310x150 wide tile) - Optional wide version -->
+      <wide310x150logo src="/assets/images/app-icon-310-wide.png"/>
+      
+      <!-- Large Square Logo (310x310) - Full app icon -->
+      <square310x310logo src="/assets/images/app-icon-310.png"/>
+      
+      <!-- Tile Color (background for tiles) - Matches PWA theme -->
+      <TileColor>#d4af37</TileColor>
+      
+      <!-- Optional: Small logo for badges/notifications -->
+      <smalllogo src="/assets/images/app-icon-70.png"/>
+    </tile>
+    
+    <!-- Badge Settings (for notifications/toasts) -->
+    <badge logo="/assets/images/badge-logo.png" />
+    
+    <!-- Notification Settings (for toasts in pinned sites) -->
+    <toast>
+      <!-- Use notification image for toasts -->
+      <visual>
+        <binding template="ToastGeneric">
+          <text></text>
+          <image placement="inline" src="/assets/images/toast-image.png" />
+          <text placement="attribution"></text>
+        </binding>
+      </visual>
+    </toast>
+    
+    <!-- Optional: Square badges with different colors (legacy) -->
+    <square70x70logo src="/assets/images/app-icon-70.png">
+      <TileColor>#1a1a1a</TileColor> <!-- Dark background for contrast -->
+    </square70x70logo>
+    
+    <!-- Tile Color for legacy IE -->
+    <TileColor>#d4af37</TileColor>
+  </msapplication>
+</browserconfig>

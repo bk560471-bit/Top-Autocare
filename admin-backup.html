@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Backup & Restore - Top Autocare Garage</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="msapplication-TileColor" content="#d4af37">
+    <meta name="application-name" content="Top Autocare">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+
+    <!-- Mobile/PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Top Autocare">
+    <link rel="apple-touch-icon" href="/assets/images/app-icon-512.png">
+    <link rel="preload" href="/offline.html" as="document" crossorigin="anonymous">
+
+    <!-- Favicon for Browsers -->
+    <link rel="icon" href="/assets/images/app-icon-192.png" sizes="192x192" type="image/png">
+    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            line-height: 1.6;
+            padding-bottom: 80px;
+            position: relative;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px);
+            z-index: -1;
+        }
+        /* Header Styles */
+        #header {
+            background: rgba(0, 0, 0, 0.9);
+            padding: 0.25rem 0;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+            transition: transform 0.3s ease;
+            height: 60px;
+        }
+        #header.hidden {
+            transform: translateY(-100%);
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            padding: 0 0.75rem;
+            color: #d4af37;
+        }
+        .logo-container:hover h1 {
+            text-decoration: underline;
+        }
+        .logo-container img {
+            height: 40px;
+            width: auto;
+            margin-right: 0.5rem;
+            border-radius: 50%;
+        }
+        .logo-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin: 0;
+            color: #d4af37;
+            text-decoration: none;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: color 0.3s ease;
+            z-index: 1002;
+        }
+        .menu-toggle:hover {
+            color: #d4af37;
+        }
+        @media (max-width: 768px) {
+            #header {
+                padding: 0.5rem;
+                flex-wrap: wrap;
+            }
+            .logo-container {
+                padding: 0 0.5rem;
+            }
+            .logo-title {
+                font-size: 1rem;
+            }
+            .header-actions {
+                padding-right: 0.5rem;
+                gap: 0.5rem;
+            }
+        }
+        /* Admin Navigation Menu (Active on Backup & Restore) */
+        .admin-nav-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .admin-nav-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .admin-nav-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 280px;
+            height: 100vh;
+            background: #1a1a1a;
+            padding: 1rem;
+            overflow-y: auto;
+            transition: right 0.3s ease;
+            z-index: 1001;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.3);
+        }
+        .admin-nav-menu.active {
+            right: 0;
+        }
+        .admin-nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+            margin-bottom: 1rem;
+        }
+        .admin-nav-title {
+            font-size: 1.125rem;
+            color: #d4af37;
+            font-weight: 700;
+        }
+        .close-menu {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            transition: color 0.3s ease;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .close-menu:hover {
+            color: #d4af37;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .admin-menu {
+            list-style: none;
+            padding: 0;
+        }
+        .admin-menu li {
+            margin-bottom: 0.5rem;
+        }
+        .admin-menu a {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #BDBDBD;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            margin: 0.25rem 0;
+        }
+        .admin-menu a:hover, .admin-menu a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #d4af37;
+            border-right: 3px solid #d4af37;
+            transform: translateX(5px);
+        }
+        .admin-menu i {
+            width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+            opacity: 0.7;
+        }
+        .admin-menu a:hover i, .admin-menu a.active i {
+            opacity: 1;
+        }
+        .signout-btn {
+            position: absolute;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            background: #ff6b6b;
+            color: #fff;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: background 0.3s ease;
+            width: calc(100% - 2rem);
+        }
+        .signout-btn:hover {
+            background: #ff5252;
+            transform: translateY(-1px);
+        }
+        /* Main Content */
+        .main-content {
+            padding: 1.5rem;
+            margin-top: 60px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+        }
+        .welcome h1 {
+            font-size: 1.75rem;
+            color: #d4af37;
+            margin-bottom: 0.25rem;
+        }
+        .welcome p {
+            color: #BDBDBD;
+            font-size: 0.875rem;
+        }
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .btn-primary {
+            background: #d4af37;
+            color: #000;
+        }
+        .btn-primary:hover {
+            background: #b8962e;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background: #333;
+            color: #fff;
+        }
+        .btn-secondary:hover {
+            background: #444;
+            transform: translateY(-1px);
+        }
+        .btn-danger {
+            background: #ff6b6b;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #ff5252;
+            transform: translateY(-1px);
+        }
+        .btn-warning {
+            background: #ff9800;
+            color: #fff;
+        }
+        .btn-warning:hover {
+            background: #f57c00;
+            transform: translateY(-1px);
+        }
+        /* Backup Section */
+        .backup-section {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            border: 1px solid #333;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+        .section-header {
+            background: rgba(42, 42, 42, 0.9);
+            padding: 1.5rem;
+            border-bottom: 1px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            color: #d4af37;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+        .backup-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(18, 18, 18, 0.8);
+        }
+        .backup-card {
+            background: rgba(42, 42, 42, 0.9);
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .backup-card:hover {
+            border-color: #d4af37;
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2);
+            transform: translateY(-2px);
+        }
+        .backup-card .fa-stack {
+            color: #d4af37;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .backup-card h3 {
+            margin-bottom: 0.5rem;
+            color: #fff;
+            font-size: 1.125rem;
+        }
+        .backup-card p {
+            color: #BDBDBD;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        /* Restore Section */
+        .restore-section {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            border: 1px solid #333;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 2rem;
+        }
+        .restore-header {
+            background: rgba(42, 42, 42, 0.9);
+            padding: 1.5rem;
+            border-bottom: 1px solid #333;
+        }
+        .warning-message {
+            background: rgba(255, 152, 0, 0.2);
+            border: 1px solid #ff9800;
+            color: #FFC107;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .file-input-wrapper {
+            border: 2px dashed #333;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1.5rem;
+            transition: all 0.3s ease;
+            background: rgba(18, 18, 18, 0.8);
+        }
+        .file-input-wrapper:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .file-input-wrapper.dragover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.2);
+            transform: scale(1.02);
+        }
+        .file-input {
+            display: none;
+        }
+        .file-input-label {
+            color: #BDBDBD;
+            cursor: pointer;
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid #444;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            background: #121212;
+        }
+        .file-input-label:hover {
+            color: #d4af37;
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .file-preview {
+            background: rgba(18, 18, 18, 0.8);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem;
+            display: none;
+            border: 1px solid #333;
+        }
+        .file-preview h4 {
+            color: #d4af37;
+            margin-bottom: 1rem;
+        }
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #333;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+            display: none;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #d4af37;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        /* Backup History */
+        .backup-history-section {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            border: 1px solid #333;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .history-header {
+            background: rgba(42, 42, 42, 0.9);
+            padding: 1.5rem;
+            border-bottom: 1px solid #333;
+        }
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            padding: 1.5rem;
+            background: rgba(18, 18, 18, 0.8);
+        }
+        .backup-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: rgba(42, 42, 42, 0.9);
+            border-radius: 8px;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        .backup-item:hover {
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.05);
+        }
+        .backup-info {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .backup-date {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.25rem;
+        }
+        .backup-size {
+            color: #BDBDBD;
+            font-size: 0.875rem;
+        }
+        .backup-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .download-btn {
+            padding: 0.5rem 1rem;
+            background: #d4af37;
+            color: #000;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        .download-btn:hover {
+            background: #b8962e;
+            transform: translateY(-1px);
+        }
+        .no-history {
+            text-align: center;
+            padding: 3rem;
+            color: #BDBDBD;
+            font-style: italic;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin: 1rem 0;
+        }
+        .no-history i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            display: block;
+        }
+        /* Message Container */
+        #messageContainer {
+            margin-bottom: 1rem;
+            z-index: 1000;
+            position: relative;
+        }
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            max-width: 100%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+        .message.info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+            border: 1px solid #2196F3;
+        }
+        .message.warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+            border: 1px solid #FFC107;
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            .header-actions {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            .backup-options {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .backup-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            .backup-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            .file-input-wrapper {
+                padding: 1.5rem;
+            }
+            .warning-message {
+                flex-direction: column;
+                gap: 0.5rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <a href="admin.html" class="logo-container">
+            <img src="images/logo.png" alt="Top Autocare Logo" style="height: 40px; width: auto;">
+            <h1 class="logo-title">Admin Panel</h1>
+        </a>
+        
+        <div class="header-actions">
+            <button class="menu-toggle" onclick="toggleAdminMenu()" title="Admin Menu">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Admin Navigation Menu (Active on Backup & Restore) -->
+    <div class="admin-nav-overlay" onclick="toggleAdminMenu()">
+        <div class="admin-nav-menu" onclick="event.stopPropagation()">
+            <div class="admin-nav-header">
+                <h2 class="admin-nav-title">Admin Menu</h2>
+                <button class="close-menu" onclick="toggleAdminMenu()">&times;</button>
+            </div>
+            
+            <ul class="admin-menu">
+                <li><a href="admin.html" onclick="toggleAdminMenu()"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="admin-users.html" onclick="toggleAdminMenu()"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="admin-appointments.html" onclick="toggleAdminMenu()"><i class="fas fa-calendar-check"></i> Appointments</a></li>
+                <li><a href="admin-services.html" onclick="toggleAdminMenu()"><i class="fas fa-wrench"></i> Services</a></li>
+                <li><a href="admin-vehicles.html" onclick="toggleAdminMenu()"><i class="fas fa-car"></i> Vehicles</a></li>
+                <li><a href="admin-reports.html" onclick="toggleAdminMenu()"><i class="fas fa-chart-bar"></i> Reports</a></li>
+                <li><a href="admin-settings.html" onclick="toggleAdminMenu()"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="admin-profile.html" onclick="toggleAdminMenu()"><i class="fas fa-user-cog"></i> Admin Profile</a></li>
+                <li><a href="admin-notifications.html" onclick="toggleAdminMenu()"><i class="fas fa-bell"></i> Notifications</a></li>
+                <li><a href="admin-faq.html" onclick="toggleAdminMenu()"><i class="fas fa-question-circle"></i> FAQ Management</a></li>
+                <li><a href="admin-analytics.html" onclick="toggleAdminMenu()"><i class="fas fa-chart-pie"></i> Analytics</a></li>
+                <li><a href="admin-backup.html" class="active" onclick="toggleAdminMenu()"><i class="fas fa-database"></i> Backup & Restore</a></li>
+                <li><a href="admin.html" onclick="toggleAdminMenu()"><i class="fas fa-arrow-left"></i> Back to Site</a></li>
+            </ul>
+            
+            <button class="signout-btn" onclick="signOut()">
+                <i class="fas fa-sign-out-alt"></i> Sign Out
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="header">
+            <div class="welcome">
+                <h1>Backup & Restore</h1>
+                <p>Securely backup and restore your garage management data</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="createFullBackup()">
+                    <i class="fas fa-download"></i> Create Full Backup
+                </button>
+            </div>
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <!-- Backup Section -->
+        <div class="backup-section">
+            <div class="section-header">
+                <h2 class="section-title"><i class="fas fa-download"></i> Create Backup</h2>
+            </div>
+            <div class="backup-options">
+                <div class="backup-card">
+                    <div class="fa-stack fa-2x">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fas fa-database fa-stack-1x fa-inverse"></i>
+                    </div>
+                    <h3>Full Backup</h3>
+                    <p>Complete backup including users, appointments, vehicles, services, and all other data</p>
+                    <button class="btn btn-primary" onclick="createFullBackup()">Generate Backup</button>
+                </div>
+                <div class="backup-card">
+                    <div class="fa-stack fa-2x">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fas fa-users fa-stack-1x fa-inverse"></i>
+                    </div>
+                    <h3>Users Backup</h3>
+                    <p>Backup customer and staff user accounts and profiles</p>
+                    <button class="btn btn-secondary" onclick="createUsersBackup()">Backup Users</button>
+                </div>
+                <div class="backup-card">
+                    <div class="fa-stack fa-2x">
+                        <i class="fas fa-circle fa-stack-2x"></i>
+                        <i class="fas fa-calendar-check fa-stack-1x fa-inverse"></i>
+                    </div>
+                    <h3>Appointments Backup</h3>
+                    <p>Backup all service appointments and booking history</p>
+                    <button class="btn btn-secondary" onclick="createAppointmentsBackup()">Backup Appointments</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Restore Section -->
+        <div class="restore-section">
+            <div class="restore-header">
+                <h2 class="section-title"><i class="fas fa-upload"></i> Restore Backup</h2>
+                <div class="warning-message">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Critical Warning:</strong> Restore will overwrite existing data. Always create a current backup before proceeding!
+                </div>
+            </div>
+            <div class="file-input-wrapper" id="fileInputWrapper">
+                <i class="fas fa-cloud-upload-alt" style="font-size: 3rem; color: #BDBDBD; margin-bottom: 1rem;"></i>
+                <p>Drag and drop your JSON backup file here, or click to browse</p>
+                <label for="backupFile" class="file-input-label">
+                    <i class="fas fa-file-upload"></i> Choose Backup File
+                </label>
+                <input type="file" id="backupFile" class="file-input" accept=".json" onchange="handleFileSelect(event)">
+            </div>
+            <div class="file-preview" id="filePreview">
+                <h4>Selected Backup File</h4>
+                <div class="file-info">
+                    <div>
+                        <strong id="fileName"></strong>
+                        <p id="fileSize"></p>
+                    </div>
+                    <button class="btn btn-warning" onclick="confirmRestore()">
+                        <i class="fas fa-undo"></i> Restore from this Backup
+                    </button>
+                </div>
+            </div>
+            <div class="progress-bar" id="progressBar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Backup History Section -->
+        <div class="backup-history-section">
+            <div class="history-header">
+                <h2 class="section-title"><i class="fas fa-history"></i> Recent Backups</h2>
+            </div>
+            <div class="history-list" id="backupHistory">
+                <div class="no-history">
+                    <i class="fas fa-archive"></i>
+                    <div>No backup history found</div>
+                    <div style="font-size: 0.875rem; opacity: 0.7;">Create your first backup to get started</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Global Navigation Script -->
+    <script>
+        // Menu Toggle Function
+        window.toggleAdminMenu = () => {
+            const overlay = document.querySelector('.admin-nav-overlay');
+            const menu = document.querySelector('.admin-nav-menu');
+            if (overlay && menu) {
+                overlay.classList.toggle('active');
+                menu.classList.toggle('active');
+            }
+        };
+
+        // Auto-hide Navigation Script
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const header = document.getElementById('header');
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                if (header) header.classList.add('hidden');
+            } else {
+                if (header) header.classList.remove('hidden');
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (event) => {
+            const overlay = document.querySelector('.admin-nav-overlay');
+            const menu = document.querySelector('.admin-nav-menu');
+            if (overlay && overlay.classList.contains('active') && 
+                !menu.contains(event.target) && 
+                !event.target.closest('.menu-toggle')) {
+                toggleAdminMenu();
+            }
+        });
+
+        // Drag and drop file handling
+        const fileInputWrapper = document.getElementById('fileInputWrapper');
+        const fileInput = document.getElementById('backupFile');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        fileInputWrapper.addEventListener('dragover', () => {
+            fileInputWrapper.classList.add('dragover');
+        });
+
+        fileInputWrapper.addEventListener('dragleave', () => {
+            fileInputWrapper.classList.remove('dragover');
+        });
+
+        fileInputWrapper.addEventListener('drop', (e) => {
+            fileInputWrapper.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect({ target: fileInput });
+            }
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, () => fileInputWrapper.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileInputWrapper.addEventListener(eventName, () => fileInputWrapper.classList.remove('dragover'), false);
+        });
+    </script>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs, 
+            doc, 
+            getDoc, 
+            setDoc, 
+            writeBatch, 
+            Timestamp, 
+            serverTimestamp, 
+            query, 
+            orderBy, 
+            limit 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkVYS0CaKe1kHPp9GVnURiZz5WP5tE3iM",
+            authDomain: "top-autocare.firebaseapp.com",
+            projectId: "top-autocare",
+            storageBucket: "top-autocare.firebasestorage.app",
+            messagingSenderId: "879247821822",
+            appId: "1:879247821822:web:e6a418395d52aac99a4eaf",
+            measurementId: "G-T5NDM5M33Z"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+        let selectedBackupFile = null;
+        let backupHistory = [];
+
+        // DOM Elements
+        const messageContainer = document.getElementById('messageContainer');
+
+        // Utility Functions
+        function showMessage(message, type = 'info') {
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : 'info';
+            let iconClass = 'fa-info-circle';
+            if (type === 'success') iconClass = 'fa-check-circle';
+            else if (type === 'error') iconClass = 'fa-exclamation-circle';
+            else if (type === 'warning') iconClass = 'fa-exclamation-triangle';
+
+            messageContainer.innerHTML = `
+                <div class="message ${className}">
+                    <i class="fas ${iconClass}"></i>
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => messageContainer.innerHTML = '', type === 'error' ? 6000 : 4000);
+        }
+
+        function updateProgress(percent) {
+            const progressFill = document.getElementById('progressFill');
+            const progressBar = document.getElementById('progressBar');
+            if (progressFill) progressFill.style.width = `${Math.min(100, percent)}%`;
+            if (progressBar) progressBar.style.display = 'block';
+        }
+
+        function hideProgress() {
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) progressBar.style.display = 'none';
+        }
+
+        // Check if user is admin
+        async function checkAdminStatus(userId) {
+            try {
+                const userRef = doc(db, 'users', userId);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                    const userData = userSnap.data();
+                    return userData.role === 'admin' || userData.isAdmin;
+                }
+                return false;
+            } catch (error) {
+                console.error('Error checking admin status:', error);
+                return false;
+            }
+        }
+
+        // Create full backup
+        window.createFullBackup = async () => {
+            if (!confirm('Create a full backup of all data? This may take several minutes depending on data size.')) return;
+
+            showMessage('Creating full backup...', 'info');
+            updateProgress(0);
+
+            try {
+                const collections = ['users', 'appointments', 'vehicles', 'services', 'faq', 'notifications', 'settings'];
+                const backupData = {};
+                let totalItems = 0;
+
+                // Progress for collections loading
+                for (let i = 0; i < collections.length; i++) {
+                    const collectionName = collections[i];
+                    updateProgress((i / collections.length) * 50);
+
+                    try {
+                        const q = query(collection(db, collectionName), limit(1000)); // Limit for large collections
+                        const querySnapshot = await getDocs(q);
+                        backupData[collectionName] = [];
+
+                        querySnapshot.forEach((doc) => {
+                            const docData = doc.data();
+                            const serializableData = Object.fromEntries(
+                                Object.entries(docData).map(([key, value]) => {
+                                    if (value instanceof Timestamp) {
+                                        return [key, value.toDate().toISOString()];
+                                    } else if (value && typeof value === 'object' && value.toDate) {
+                                        return [key, value.toDate().toISOString()];
+                                    }
+                                    return [key, value];
+                                })
+                            );
+                            backupData[collectionName].push({
+                                id: doc.id,
+                                data: serializableData,
+                                createdAt: serializableData.createdAt ? serializableData.createdAt : null
+                            });
+                            totalItems++;
+                        });
+                    } catch (err) {
+                        console.warn(`Could not backup collection ${collectionName}:`, err);
+                        backupData[collectionName] = [];
+                    }
+                }
+
+                backupData.metadata = {
+                    createdAt: new Date().toISOString(),
+                    timestamp: serverTimestamp(),
+                    totalItems,
+                    collections: collections.filter(c => backupData[c] && backupData[c].length > 0).length,
+                    appVersion: '1.0.0'
+                };
+
+                updateProgress(75);
+                const filename = `top-autocare-full-backup-${new Date().toISOString().split('T')[0]}.json`;
+                downloadBackup(backupData, filename);
+                saveBackupToHistory(backupData, filename);
+
+                updateProgress(100);
+                showMessage(`Full backup completed! ${totalItems} items across ${backupData.metadata.collections} collections saved.`, 'success');
+                hideProgress();
+            } catch (error) {
+                console.error('Error creating full backup:', error);
+                if (error.code === 'permission-denied') {
+                    showMessage('Permission denied. Admin access required for backups.', 'error');
+                } else {
+                    showMessage(`Backup failed: ${error.message}. Please try again.`, 'error');
+                }
+                hideProgress();
+            }
+        };
+
+        // Create users backup
+        window.createUsersBackup = async () => {
+            if (!confirm('Create backup of users data only? This includes profiles and roles.')) return;
+            await backupCollection('users', 'users-backup', 'User profiles, roles, and account data');
+        };
+
+        // Create appointments backup
+        window.createAppointmentsBackup = async () => {
+            if (!confirm('Create backup of appointments data only? This includes booking history and services.')) return;
+            await backupCollection('appointments', 'appointments-backup', 'Appointment bookings, services, and status history');
+        };
+
+        // Helper for single collection backup
+        async function backupCollection(collectionName, type, description) {
+            showMessage(`Creating ${type} backup...`, 'info');
+            updateProgress(0);
+
+            try {
+                const q = query(collection(db, collectionName), orderBy('createdAt', 'desc'), limit(1000));
+                const querySnapshot = await getDocs(q);
+                const backupData = {
+                    collection: collectionName,
+                    description,
+                    items: [],
+                    metadata: {
+                        createdAt: new Date().toISOString(),
+                        totalItems: querySnapshot.size,
+                        type: type
+                    }
+                };
+
+                querySnapshot.forEach((doc) => {
+                    const docData = doc.data();
+                    const serializableData = Object.fromEntries(
+                        Object.entries(docData).map(([key, value]) => {
+                            if (value instanceof Timestamp) {
+                                return [key, value.toDate().toISOString()];
+                            } else if (value && typeof value === 'object' && value.toDate) {
+                                return [key, value.toDate().toISOString()];
+                            }
+                            return [key, value];
+                        })
+                    );
+                    backupData.items.push({
+                        id: doc.id,
+                        data: serializableData
+                    });
+                });
+
+                updateProgress(100);
+                const filename = `top-autocare-${type}-${new Date().toISOString().split('T')[0]}.json`;
+                downloadBackup(backupData, filename);
+                saveBackupToHistory(backupData, filename);
+
+                showMessage(`${type} backup completed! ${backupData.items.length} items saved.`, 'success');
+                hideProgress();
+            } catch (error) {
+                console.error('Error creating collection backup:', error);
+                showMessage(`Backup failed for ${collectionName}: ${error.message}`, 'error');
+                hideProgress();
+            }
+        }
+
+        // Download backup file
+        function downloadBackup(backupData, filename) {
+            try {
+                const jsonString = JSON.stringify(backupData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (error) {
+                console.error('Download error:', error);
+                showMessage(`Download failed: ${error.message}. Please try again.`, 'error');
+            }
+        }
+
+        // Save backup to history (localStorage)
+        function saveBackupToHistory(backupData, filename) {
+            const backupEntry = {
+                name: `${backupData.metadata.type || 'Backup'} - ${new Date().toLocaleString('en-US', { timeZone: 'UTC' })}`,
+                size: JSON.stringify(backupData).length,
+                date: new Date().toISOString(),
+                filename: filename,
+                data: backupData // Store full data for re-download
+            };
+
+            backupHistory.unshift(backupEntry);
+            backupHistory = backupHistory.slice(0, 10); // Limit to last 10 backups
+
+            try {
+                localStorage.setItem('topAutocareBackupHistory', JSON.stringify(backupHistory));
+                displayBackupHistory();
+            } catch (error) {
+                console.error('Error saving to localStorage:', error);
+                showMessage('Backup saved, but history storage failed.', 'warning');
+            }
+        }
+
+        // Display backup history
+        function displayBackupHistory() {
+            const historyEl = document.getElementById('backupHistory');
+            if (!historyEl) return;
+
+            if (backupHistory.length === 0) {
+                historyEl.innerHTML = `
+                    <div class="no-history">
+                        <i class="fas fa-archive"></i>
+                        <div>No backup history found</div>
+                        <div style="font-size: 0.875rem; opacity: 0.7;">Create your first backup to track history here</div>
+                    </div>
+                `;
+                return;
+            }
+
+            historyEl.innerHTML = backupHistory.map((backup, index) => `
+                <div class="backup-item">
+                    <div class="backup-info">
+                        <div class="backup-date">${backup.name}</div>
+                        <div class="backup-size">${formatFileSize(backup.size)} • ${new Date(backup.date).toLocaleDateString()}</div>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="download-btn" onclick="downloadFromHistory(${index})" title="Download this backup">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Download from history
+        window.downloadFromHistory = (index) => {
+            const backup = backupHistory[index];
+            if (backup && backup.data) {
+                downloadBackup(backup.data, backup.filename);
+            } else {
+                showMessage('Selected backup not found. Please create a new one.', 'error');
+            }
+        };
+
+        // File selection handler
+        window.handleFileSelect = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.type !== 'application/json') {
+                showMessage('Please select a valid JSON file. Other formats are not supported.', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            selectedBackupFile = file;
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = `Size: ${formatFileSize(file.size)}`;
+            document.getElementById('filePreview').style.display = 'block';
+            showMessage('Backup file selected successfully. Review and confirm restore below.', 'info');
+        };
+
+        // Confirm and perform restore
+        window.confirmRestore = async () => {
+            if (!selectedBackupFile) {
+                showMessage('No backup file selected. Please choose a file first.', 'error');
+                return;
+            }
+
+            if (!confirm('⚠️ CRITICAL WARNING: This action will OVERWRITE all existing data in the database collections from this backup! This cannot be undone. Ensure you have a current backup. Proceed with restore?')) {
+                return;
+            }
+
+            showMessage('Initializing restore process. This may take several minutes...', 'warning');
+            updateProgress(0);
+
+            try {
+                const text = await selectedBackupFile.text();
+                let backupData;
+                try {
+                    backupData = JSON.parse(text);
+                } catch (parseError) {
+                    throw new Error('Invalid JSON format in backup file. Please check the file integrity.');
+                }
+
+                if (!backupData || typeof backupData !== 'object') {
+                    throw new Error('Backup file does not contain valid data structure.');
+                }
+
+                const collections = Object.keys(backupData).filter(key => key !== 'metadata');
+                if (collections.length === 0) {
+                    throw new Error('No data collections found in backup file.');
+                }
+
+                let restoredCount = 0;
+                let collectionIndex = 0;
+
+                for (const collectionName of collections) {
+                    updateProgress((collectionIndex / collections.length) * 80);
+                    collectionIndex++;
+
+                    const items = backupData[collectionName];
+                    if (!Array.isArray(items) || items.length === 0) {
+                        console.warn(`No items in collection ${collectionName}`);
+                        continue;
+                    }
+
+                    const batch = writeBatch(db);
+                    let batchCount = 0;
+
+                    for (const item of items) {
+                        if (!item.id || !item.data) {
+                            console.warn('Invalid item structure:', item);
+                            continue;
+                        }
+
+                        const docRef = doc(db, collectionName, item.id);
+                        let restoreData = item.data;
+
+                        // Convert ISO strings back to Timestamps
+                        restoreData = Object.fromEntries(
+                            Object.entries(restoreData).map(([key, value]) => {
+                                if (typeof value === 'string' && key.endsWith('At') && !isNaN(Date.parse(value))) {
+                                    return [key, Timestamp.fromDate(new Date(value))];
+                                }
+                                return [key, value];
+                            })
+                        );
+
+                        batch.set(docRef, restoreData, { merge: true });
+                        batchCount++;
+                        restoredCount++;
+
+                        if (batchCount >= 500) { // Firestore batch limit
+                            await batch.commit();
+                            console.log(`Committed batch for ${collectionName}: ${batchCount} items`);
+                            batchCount = 0;
+                            const newBatch = writeBatch(db);
+                            batch = newBatch;
+                        }
+                    }
+
+                    if (batchCount > 0) {
+                        await batch.commit();
+                        console.log(`Final batch for ${collectionName}: ${batchCount} items`);
+                    }
+
+                    showMessage(`Restored ${items.length} items from ${collectionName}`, 'info');
+                }
+
+                updateProgress(100);
+                showMessage(`Restore completed successfully! Total ${restoredCount} items restored from ${collections.length} collections. Reload the app to see changes.`, 'success');
+                hideProgress();
+
+                // Reset file input
+                selectedBackupFile = null;
+                document.getElementById('filePreview').style.display = 'none';
+                document.getElementById('backupFile').value = '';
+                document.getElementById('backupFile').dispatchEvent(new Event('change'));
+
+            } catch (error) {
+                console.error('Restore error:', error);
+                if (error.code === 'permission-denied') {
+                    showMessage('Permission denied. Admin access required for restore operations.', 'error');
+                } else {
+                    showMessage(`Restore failed: ${error.message}. Please verify the backup file and try again.`, 'error');
+                }
+                hideProgress();
+            }
+        };
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Load backup history on page load
+        const storedHistory = localStorage.getItem('topAutocareBackupHistory');
+        if (storedHistory) {
+            try {
+                backupHistory = JSON.parse(storedHistory);
+                displayBackupHistory();
+            } catch (e) {
+                console.error('Error loading backup history:', e);
+                backupHistory = [];
+                localStorage.removeItem('topAutocareBackupHistory');
+            }
+        }
+
+        // Sign Out Function (Global)
+        window.signOut = async () => {
+            if (confirm('Are you sure you want to sign out? Any unsaved changes will be lost.')) {
+                try {
+                    await signOut(auth);
+                    showMessage('Signed out successfully!', 'success');
+                    localStorage.removeItem('topAutocareBackupHistory'); // Clear history on sign out
+                    setTimeout(() => window.location.href = 'signin.html', 1500);
+                } catch (error) {
+                    console.error('Sign out error:', error);
+                    showMessage('Error signing out. Please try again or refresh the page.', 'error');
+                }
+            }
+        };
+
+        // Initialize Page
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                
+                const isAdmin = await checkAdminStatus(user.uid);
+                if (isAdmin) {
+                    showMessage('Backup & Restore loaded. Remember: Always backup before major changes or restores!', 'info');
+                    displayBackupHistory(); // Ensure history displays
+                } else {
+                    showMessage('Access denied. Admin privileges required for backup operations.', 'error');
+                    setTimeout(() => window.location.href = 'admin.html', 2000);
+                }
+            } else {
+                window.location.href = 'signin.html';
+            }
+        });
+
+        console.log('Admin Backup & Restore loaded with Firebase integration');
+    </script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('✅ Service Worker registered');
+                    })
+                    .catch((error) => {
+                        console.error('❌ Service Worker error:', error);
+                    });
+            });
+        }
+    </script>
+<script src="analytics.js"></script>
+<script src="offline-db.js"></script>
+<script src="performance-monitor.js"></script>
+<script src="error-handler.js"></script>
+<script src="service-worker-manager.js"></script>
+</body>
+</html>

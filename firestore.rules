@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Public readable collections (e.g., services, global settings)
+    match /services/{serviceId} {
+      allow read: if true;  // Public: Anyone can read service details
+      allow write: if request.auth != null && 
+                   (request.auth.uid == get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+    
+    match /settings/{settingId} {
+      allow read: if true;  // Public: Business info, contact details
+      allow write: if request.auth != null && 
+                   get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // User-specific collections (own data only, admins full access)
+    match /users/{userId} {
+      // Users can read/write own profile
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      
+      // Admins can manage all users
+      allow read, write: if request.auth != null && 
+                         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    match /appointments/{appointmentId} {
+      // Users can read/write own appointments
+      allow read, write: if request.auth != null && 
+                         (resource == null || resource.data.userId == request.auth.uid) &&
+                         (request.auth.uid == request.auth.uid);  // Basic auth check
+      
+      // Admins can manage all appointments
+      allow read, write: if request.auth != null && 
+                         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      
+      // Prevent deletion of others' appointments (users can only cancel own)
+      allow delete: if request.auth != null && 
+                    (request.auth.uid == resource.data.userId || 
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin') &&
+                    resource.data.status != 'completed';  // No delete after completion
+    }
+    
+    match /vehicles/{vehicleId} {
+      // Users can read/write own vehicles
+      allow read, write: if request.auth != null && 
+                         (resource == null || resource.data.userId == request.auth.uid);
+      
+      // Admins can read all, write own or with permission
+      allow read: if request.auth != null && 
+                  get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow write: if request.auth != null && 
+                   (request.auth.uid == resource.data.userId || 
+                    get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+    
+    match /notifications/{notificationId} {
+      // Users can read own notifications, admins can send/read all
+      allow read: if request.auth != null && 
+                  (resource == null || resource.data.userId == request.auth.uid);
+      allow create: if request.auth != null && 
+                    (request.resource.data.userId == request.auth.uid || 
+                     exists(/databases/$(database)/documents/users/$(request.auth.uid)) && 
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      
+      // Users can mark own as read, admins manage all
+      allow update: if request.auth != null && 
+                    (request.auth.uid == resource.data.userId || 
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      
+      allow delete: if request.auth != null && 
+                    (request.auth.uid == resource.data.userId || 
+                     get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+    }
+    
+    // Global collections (admin-only writes)
+    match /{document=**} {
+      // Fallback: Deny all other writes unless explicitly allowed above
+      allow read, write: if false;  // No unauthenticated access
+    }
+  }
+}

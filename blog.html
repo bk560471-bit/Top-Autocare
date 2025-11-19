@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Blogs - Top Autocare</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="msapplication-TileColor" content="#d4af37">
+    <meta name="application-name" content="Top Autocare">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+
+    <!-- Mobile/PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Top Autocare">
+    <link rel="apple-touch-icon" href="/assets/images/app-icon-512.png">
+    <link rel="preload" href="/offline.html" as="document" crossorigin="anonymous">
+
+    <!-- Favicon for Browsers -->
+    <link rel="icon" href="/assets/images/app-icon-192.png" sizes="192x192" type="image/png">
+    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+    
+    <style>
+        * {margin:0;padding:0;box-sizing:border-box;}
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #fff;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            position: relative;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px);
+            z-index: -1;
+        }
+
+        /* ---- HEADER ---- */
+        #header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.9);
+            color: #d4af37;
+            padding: 0.5rem 1rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            height: auto;
+        }
+        
+        #header.hidden {
+            transform: translateY(-100%);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+            color: #d4af37;
+        }
+        
+        .logo-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #d4af37;
+            margin: 0;
+            white-space: nowrap;
+        }
+        
+        .logo-container img {
+            height: 50px;
+            width: auto;
+            border-radius: 50%;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .back-btn {
+            background: transparent;
+            color: #d4af37;
+            border: 1px solid #d4af37;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #d4af37;
+            color: #000;
+        }
+
+        .notification-bell {
+            position: relative;
+            color: #ffffff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        .notification-bell:hover {
+            color: #d4af37;
+        }
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #d4af37;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            #header {
+                padding: 0.5rem;
+                flex-wrap: wrap;
+            }
+            .logo-title {
+                font-size: 1.25rem;
+            }
+            .header-actions {
+                padding-right: 0.5rem;
+                gap: 0.5rem;
+            }
+            .back-btn {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* ---- MAIN CONTENT ---- */
+        main {
+            padding: 20px;
+            max-width: 1000px;
+            margin: 80px auto 20px;
+            min-height: calc(100vh - 150px);
+        }
+
+        .blogs-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #d4af37;
+            margin-bottom: 2rem;
+            font-weight: 700;
+        }
+
+        /* Blogs List */
+        .blogs-container {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .blog-card {
+            background: rgba(30, 30, 30, 0.85);
+            border-radius: 12px;
+            padding: 0;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2);
+            border-color: #d4af37;
+        }
+
+        .blog-card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .blog-card-content {
+            padding: 1.5rem;
+        }
+
+        .blog-card h2 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .blog-card p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .blog-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .blog-card-meta .likes {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .blog-card-meta .comments {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .admin-controls button {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .admin-controls .edit-btn {
+            background: #d4af37;
+            color: #000;
+        }
+
+        .admin-controls .edit-btn:hover {
+            background: #b8962e;
+        }
+
+        .admin-controls .delete-btn {
+            background: #ff6b6b;
+            color: #fff;
+        }
+
+        .admin-controls .delete-btn:hover {
+            background: #ff5252;
+        }
+
+        /* Single Blog Post */
+        .single-post {
+            background: rgba(30, 30, 30, 0.85);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #333;
+        }
+
+        .single-post h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .single-post-image {
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 1rem auto;
+            display: block;
+        }
+
+        .single-post-body {
+            color: #fff;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            white-space: pre-wrap;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .like-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .like-btn {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .like-btn:hover, .like-btn.liked {
+            background: #d4af37;
+            color: #000;
+        }
+
+        /* Comments Section */
+        .comments-section h3 {
+            color: #d4af37;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: rgba(30, 30, 30, 0.85);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .comment-form textarea {
+            background: rgba(18, 18, 18, 0.85);
+            border: 1px solid #333;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+            min-height: 80px;
+        }
+
+        .comment-form textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .comment-submit {
+            background: #d4af37;
+            color: #000;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            align-self: flex-end;
+        }
+
+        .comment-submit:hover {
+            background: #b8962e;
+        }
+
+        .comment-submit:disabled {
+            background: #666;
+            cursor: not-allowed;
+        }
+
+        .comments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .comment-item {
+            background: rgba(30, 30, 30, 0.85);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .comment-author {
+            color: #d4af37;
+            font-weight: 600;
+        }
+
+        .comment-date {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+        }
+
+        .comment-text {
+            color: #fff;
+            line-height: 1.5;
+        }
+
+        .comment-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .comment-delete {
+            background: #ff6b6b;
+            color: #fff;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .comment-delete:hover {
+            background: #ff5252;
+        }
+
+        /* Edit Mode */
+        .edit-form {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+            background: rgba(30, 30, 30, 0.85);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid #333;
+        }
+
+        .edit-form.active {
+            display: flex;
+        }
+
+        .edit-form input[type="text"],
+        .edit-form textarea {
+            background: rgba(18, 18, 18, 0.85);
+            border: 1px solid #333;
+            color: #fff;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: inherit;
+        }
+
+        .edit-form input[type="text"] {
+            font-size: 1.5rem;
+            padding: 1rem;
+        }
+
+        .edit-form textarea {
+            resize: vertical;
+            min-height: 200px;
+        }
+
+        .edit-form input[type="file"] {
+            padding: 0.5rem;
+            background: rgba(18, 18, 18, 0.85);
+            color: #fff;
+            border: 1px solid #333;
+            border-radius: 6px;
+        }
+
+        .edit-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .edit-save, .edit-cancel {
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .edit-save {
+            background: #d4af37;
+            color: #000;
+            border: none;
+        }
+
+        .edit-save:hover {
+            background: #b8962e;
+        }
+
+        .edit-cancel {
+            background: transparent;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+
+        .edit-cancel:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Loading States */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .no-content {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Messages */
+        .message {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .message.success {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            border: 1px solid #00ff00;
+        }
+
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            border: 1px solid #ff0000;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            main {
+                padding: 15px;
+                margin: 70px auto 20px;
+            }
+
+            .blogs-title {
+                font-size: 2rem;
+            }
+
+            .single-post {
+                padding: 1.5rem;
+            }
+
+            .single-post h1 {
+                font-size: 2rem;
+            }
+
+            .single-post-image {
+                height: 250px;
+            }
+
+            .comment-form {
+                padding: 1rem;
+            }
+
+            .post-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .blog-card-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .blogs-title {
+                font-size: 1.75rem;
+            }
+
+            .blog-card h2 {
+                font-size: 1.25rem;
+            }
+
+            .single-post h1 {
+                font-size: 1.75rem;
+            }
+        }
+
+        .likers-list {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.5rem;
+        }
+
+        .likers-list span {
+            background: rgba(212, 175, 55, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.25rem;
+            display: inline-block;
+        }
+
+        .more-likers {
+            color: #d4af37;
+            cursor: pointer;
+        }
+
+        .more-likers:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+    <!-- Logo Container -->
+    <a href="dashboard.html" class="logo-container">
+        <img src="images/logo.png" alt="Top Autocare Logo" style="height: 50px; width: auto;">
+        <h1 class="logo-title">Top Autocare</h1>
+    </a>
+    
+    <!-- Header Actions -->
+    <div class="header-actions">
+        <!-- Book Service Button -->
+        <a href="book-appointment.html" class="book-service-btn">
+            <i class="fas fa-calendar-plus"></i> Book Service
+        </a>
+        
+        <!-- Notification Bell -->
+        <div class="notification-bell" onclick="window.location.href='notifications.html'">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge" style="display: none;">0</span>
+        </div>
+        
+        <!-- Back Button for Single Post -->
+        <a href="dashboard.html" class="back-btn" id="backBtn" style="display: none;">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main>
+    <!-- Blogs Title (Shown in List Mode) -->
+    <h1 class="blogs-title" id="blogsTitle">Top Autocare Updates</h1>
+
+    <!-- Dynamic Content Area -->
+    <div id="contentArea">
+        <!-- Loading placeholder -->
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading blogs...</p>
+        </div>
+    </div>
+</main>
+
+<!-- Mobile Bottom Navigation (Optional for Blog - Hide if not needed, but include for consistency) -->
+<nav class="mobile-nav" style="display: none;">
+    <ul class="nav-grid">
+        <li><a class="nav-item-mobile" href="myvehicles.html"><i class="fas fa-car"></i><span>Vehicles</span></a></li>
+        <li><a class="nav-item-mobile" href="services.html"><i class="fas fa-wrench"></i><span>Services</span></a></li>
+        <li><a class="nav-item-mobile" href="dashboard.html"><i class="fas fa-tachometer-alt"></i><span>Dashboard</span></a></li>
+        <li><a class="nav-item-mobile active" href="blog.html"><i class="fas fa-newspaper"></i><span>Blog</span></a></li>
+        <li><a class="nav-item-mobile" href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a></li>
+    </ul>
+</nav>
+
+<!-- Firebase Scripts -->
+<script type="module">
+    // Import Firebase
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { 
+        getAuth, 
+        onAuthStateChanged,
+        signInAnonymously,
+        signOut 
+    } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { 
+        getFirestore, 
+        collection, 
+        query, 
+        orderBy, 
+        getDocs, 
+        doc, 
+        getDoc, 
+        updateDoc, 
+        deleteDoc, 
+        arrayUnion, 
+        arrayRemove,
+        addDoc,
+        serverTimestamp,
+        where,
+        onSnapshot,
+        writeBatch 
+    } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+    // Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyBkVYS0CaKe1kHPp9GVnURiZz5WP5tE3iM",
+        authDomain: "top-autocare.firebaseapp.com",
+        projectId: "top-autocare",
+        storageBucket: "top-autocare.firebasestorage.app",
+        messagingSenderId: "879247821822",
+        appId: "1:879247821822:web:e6a418395d52aac99a4eaf",
+        measurementId: "G-T5NDM5M33Z"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let currentPostId = null;
+    let editMode = false;
+    let postUnsubscribe = null;
+    let commentsUnsubscribe = null;
+    let unsubscribeNotifications = null;
+
+    // Check URL Params
+    const urlParams = new URLSearchParams(window.location.search);
+    currentPostId = urlParams.get('post');
+    if (!currentPostId) {
+        currentPostId = null; // List mode
+    }
+    editMode = urlParams.has('edit') && urlParams.get('edit') === currentPostId; // Edit specific post
+
+    // DOM Elements
+    const backBtn = document.getElementById('backBtn');
+    const contentArea = document.getElementById('contentArea');
+    const loading = document.getElementById('loading');
+    const title = document.getElementById('blogsTitle');
+
+    // Auth State Observer (Allow anonymous for read-only, sign-in for interactions)
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        if (!currentUser) {
+            // Sign in anonymously for read access
+            signInAnonymously(auth).catch(err => console.error('Auth error:', err));
+        }
+        loadContent();
+        loadNotifications(); // Update badge even for blogs
+    });
+
+    // Load Notifications for Badge (if signed in)
+    function loadNotifications() {
+        if (!currentUser || unsubscribeNotifications) return;
+
+        const notificationsQuery = query(
+            collection(db, 'notifications'),
+            where('userId', '==', currentUser.uid),
+            where('read', '==', false),
+            orderBy('timestamp', 'desc'),
+            limit(3)
+        );
+
+        unsubscribeNotifications = onSnapshot(notificationsQuery, (snapshot) => {
+            const unreadCount = snapshot.size;
+            const notificationBadge = document.querySelector('.notification-badge');
+            if (notificationBadge) {
+                notificationBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+                notificationBadge.style.display = unreadCount === 0 ? 'none' : 'flex';
+            }
+        }, (error) => {
+            console.error('Notifications error:', error);
+        });
+    }
+
+    // Show Message Helper
+    function showMessage(text, type = 'info') {
+        const msg = document.createElement('div');
+        msg.className = `message ${type}`;
+        msg.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'times-circle' : 'info-circle'}"></i> ${text}`;
+        document.querySelector('main').insertBefore(msg, contentArea);
+        setTimeout(() => {
+            if (msg.parentNode) msg.remove();
+        }, 3000);
+    }
+
+    // Load Content (List or Single Post)
+    async function loadContent() {
+        loading.style.display = 'block';
+        contentArea.innerHTML = ''; // Clear
+
+        // Show/hide back btn
+        backBtn.style.display = currentPostId ? 'flex' : 'none';
+        if (currentPostId) {
+            backBtn.href = 'blog.html'; // Back to list
+        }
+
+        try {
+            if (!currentPostId) {
+                // List Mode
+                title.style.display = 'block';
+                title.textContent = 'Top Autocare Updates';
+                await loadBlogsList();
+            } else {
+                // Single Post Mode
+                title.style.display = 'none';
+                await loadSinglePost();
+            }
+        } catch (error) {
+            console.error('Error loading content:', error);
+            contentArea.innerHTML = `
+                <div class="no-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Failed to load content. Please try again.</p>
+                    <button onclick="loadContent()" class="btn btn-primary">Retry</button>
+                </div>
+            `;
+            showMessage('Failed to load blogs.', 'error');
+        } finally {
+            loading.style.display = 'none';
+        }
+    }
+
+    // Cleanup listeners
+    function cleanupListeners() {
+        if (postUnsubscribe) {
+            postUnsubscribe();
+            postUnsubscribe = null;
+        }
+        if (commentsUnsubscribe) {
+            commentsUnsubscribe();
+            commentsUnsubscribe = null;
+        }
+    }
+
+    // Load Blogs List
+    async function loadBlogsList() {
+        const q = query(collection(db, 'blogs'), orderBy('timestamp', 'desc'));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            contentArea.innerHTML = `
+                <div class="no-content">
+                    <i class="fas fa-newspaper"></i>
+                    <h3>No Blog Posts</h3>
+                    <p>No blog posts available. Check back soon!</p>
+                </div>
+            `;
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'blogs-container';
+
+        for (const docSnap of querySnapshot.docs) {
+            const data = docSnap.data();
+            const postId = docSnap.id;
+            const likesCount = data.likes ? data.likes.length : 0;
+            const commentsCount = await getCommentsCount(postId); // Fetch count from subcollection
+            const authorName = await getUserName(data.authorId);
+
+            const card = document.createElement('div');
+            card.className = 'blog-card';
+            card.onclick = (e) => {
+                if (e.target.closest('.admin-controls')) return; // Prevent navigation on admin buttons
+                window.location.href = `blog.html?post=${postId}`;
+            };
+            card.innerHTML = `
+                ${data.image ? `<img src="${data.image}" alt="${data.title}" class="blog-card-image" onerror="this.style.display='none'; this.alt='No image'">` : ''}
+                <div class="blog-card-content">
+                    <h2>${data.title}</h2>
+                    <p>${data.body.substring(0, 150)}${data.body.length > 150 ? '...' : ''}</p>
+                    <div class="blog-card-meta">
+                        <div class="likes">
+                            <i class="fas fa-heart"></i>
+                            <span>${likesCount} Likes</span>
+                        </div>
+                        <div class="comments">
+                            <i class="fas fa-comment"></i>
+                            <span>${commentsCount} Comments</span>
+                        </div>
+                        <span>By ${authorName}</span>
+                        ${currentUser && data.authorId === currentUser.uid ? `
+                            <div class="admin-controls">
+                                <button class="edit-btn" onclick="editPost('${postId}'); event.stopPropagation();">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="delete-btn" onclick="deletePost('${postId}'); event.stopPropagation();">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            container.appendChild(card);
+        }
+
+        contentArea.appendChild(container);
+    }
+
+    // Get Comments Count
+    async function getCommentsCount(postId) {
+        const commentsQuery = collection(db, `blogs/${postId}/comments`);
+        const commentsSnap = await getDocs(commentsQuery);
+        return commentsSnap.size;
+    }
+
+    // Get User Name
+    async function getUserName(authorId) {
+        if (!authorId) return 'Anonymous';
+        try {
+            const userDoc = await getDoc(doc(db, 'users', authorId));
+            return userDoc.exists() ? (userDoc.data().fullName || userDoc.data().displayName || 'User') : 'Anonymous';
+        } catch (error) {
+            console.error('Error fetching author:', error);
+            return 'Anonymous';
+        }
+    }
+
+    // Load Single Post
+    async function loadSinglePost() {
+        const postRef = doc(db, 'blogs', currentPostId);
+
+        // Real-time listener for post
+        postUnsubscribe = onSnapshot(postRef, async (postDoc) => {
+            if (!postDoc.exists()) {
+                contentArea.innerHTML = `
+                    <div class="no-content">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Post Not Found</h3>
+                        <p>The requested blog post does not exist.</p>
+                        <a href="blog.html" class="btn btn-primary">Back to Blogs</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const data = postDoc.data();
+            const isLiked = currentUser && data.likes && data.likes.includes(currentUser.uid);
+            const likesCount = data.likes ? data.likes.length : 0;
+            const isAuthor = currentUser && data.authorId === currentUser.uid;
+            const authorName = await getUserName(data.authorId);
+
+            // Fetch likers names (limit to 5)
+            let likersHTML = '';
+            if (data.likes && data.likes.length > 0) {
+                const likersPreview = data.likes.slice(0, 5);
+                const likersNames = await Promise.all(likersPreview.map(async (uid) => await getUserName(uid)));
+                likersHTML = `
+                    <div class="likers-list">
+                        <strong>Liked by:</strong> ${likersNames.join(', ')}
+                        ${data.likes.length > 5 ? `<span class="more-likers" onclick="showAllLikers('${currentPostId}')"> +${data.likes.length - 5} more</span>` : ''}
+                    </div>
+                `;
+            }
+
+            // Show Edit Form if in Edit Mode (author only)
+            if (editMode && isAuthor) {
+                contentArea.innerHTML = `
+                    <div class="edit-form active">
+                        <input type="text" id="editTitle" value="${data.title}" placeholder="Post Title" required>
+                        ${data.image ? `<img src="${data.image}" alt="Current image" style="max-width: 300px; margin: 1rem 0;">` : ''}
+                        <input type="file" id="editImage" accept="image/*">
+                        <textarea id="editBody" placeholder="Post Body" required>${data.body}</textarea>
+                        <div class="edit-actions">
+                            <button class="edit-save" onclick="saveEdit('${currentPostId}')">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="blog.html?post=${currentPostId}" class="edit-cancel">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Real-time comments listener
+            if (commentsUnsubscribe) commentsUnsubscribe();
+            const commentsQuery = query(collection(db, `blogs/${currentPostId}/comments`), orderBy('timestamp', 'asc'));
+            commentsUnsubscribe = onSnapshot(commentsQuery, async (commentsSnapshot) => {
+                let commentsHTML = '';
+                for (const commentDoc of commentsSnapshot.docs) {
+                    const commentData = commentDoc.data();
+                    const commentId = commentDoc.id;
+                    const isOwnComment = currentUser && commentData.userId === currentUser.uid;
+                    const commentAuthorName = await getUserName(commentData.userId);
+                    const commentDate = commentData.timestamp ? new Date(commentData.timestamp.toDate()).toLocaleString() : 'Just now';
+
+                    commentsHTML += `
+                        <div class="comment-item">
+                            <div class="comment-header">
+                                <span class="comment-author">${commentAuthorName}</span>
+                                <span class="comment-date">${commentDate}</span>
+                            </div>
+                            <p class="comment-text">${commentData.text}</p>
+                            ${isOwnComment ? `
+                                <div class="comment-actions">
+                                    <button class="comment-delete" onclick="deleteComment('${commentId}', '${currentPostId}')">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+
+                // Update view
+                contentArea.innerHTML = `
+                    <article class="single-post">
+                        <h1>${data.title}</h1>
+                        <p style="text-align: right; color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">By ${authorName} • ${data.timestamp ? new Date(data.timestamp.toDate()).toLocaleDateString() : 'Recent'}</p>
+                        ${data.image ? `<img src="${data.image}" alt="${data.title}" class="single-post-image" onerror="this.style.display='none'; this.alt='No image'">` : ''}
+                        <div class="single-post-body">${data.body.replace(/\n/g, '<br>')}</div>
+                        ${isAuthor && !editMode ? `
+                            <div style="text-align: right; margin-bottom: 1rem;">
+                                <button onclick="editPost('${currentPostId}')" class="btn btn-primary" style="margin-right: 0.5rem;">
+                                    <i class="fas fa-edit"></i> Edit Post
+                                </button>
+                                <button onclick="deletePost('${currentPostId}')" class="btn btn-secondary" style="background: #ff6b6b; color: #fff; border: 1px solid #ff6b6b;">
+                                    <i class="fas fa-trash"></i> Delete Post
+                                </button>
+                            </div>
+                        ` : ''}
+                        <div class="post-actions">
+                            <div class="like-section">
+                                <button class="like-btn ${isLiked ? 'liked' : ''}" onclick="toggleLike('${currentPostId}', '${currentUser ? currentUser.uid : ''}'); event.preventDefault();">
+                                    <i class="fas ${isLiked ? 'fa-heart' : 'fa-heart-o'}"></i>
+                                    Like (${likesCount})
+                                </button>
+                                ${likersHTML}
+                            </div>
+                            <button onclick="sharePost('${data.title}')" class="like-btn" style="background: transparent; border: 1px solid #d4af37; color: #d4af37;">
+                                <i class="fas fa-share-alt"></i> Share
+                            </button>
+                        </div>
+
+                        <section class="comments-section">
+                            <h3>Comments (${commentsSnapshot.size})</h3>
+                            ${currentUser && !currentUser.isAnonymous ? `
+                                <form class="comment-form" onsubmit="addComment(event, '${currentPostId}'); return false;">
+                                    <textarea id="commentText" placeholder="Add a comment..." required></textarea>
+                                    <button type="submit" class="comment-submit">Post Comment</button>
+                                </form>
+                            ` : `
+                                <p style="text-align: center; color: rgba(255, 255, 255, 0.6); margin: 1rem 0;">Sign in to comment. <a href="signin.html" style="color: #d4af37;">Sign In</a></p>
+                            `}
+                            ${commentsSnapshot.empty ? `
+                                <div class="no-content" style="padding: 2rem;">
+                                    <i class="fas fa-comment-slash"></i>
+                                    <p>No comments yet. Be the first to comment!</p>
+                                </div>
+                            ` : ''}
+                            <div class="comments-list">${commentsHTML}</div>
+                        </section>
+                    </article>
+                `;
+            }, (error) => {
+                console.error('Comments error:', error);
+                showMessage('Failed to load comments.', 'error');
+            });
+        }, (error) => {
+            console.error('Error loading post:', error);
+            contentArea.innerHTML = `
+                <div class="no-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Error Loading Post</h3>
+                    <p>Failed to load the blog post.</p>
+                    <button onclick="loadContent()" class="btn btn-primary">Retry</button>
+                </div>
+            `;
+            showMessage('Failed to load post.', 'error');
+        });
+    }
+
+    // Toggle Like
+    window.toggleLike = async function(postId, userId) {
+        if (!currentUser || currentUser.isAnonymous) {
+            showMessage('Please sign in to like posts.', 'error');
+            window.location.href = 'signin.html';
+            return;
+        }
+
+        try {
+            const postRef = doc(db, 'blogs', postId);
+            await updateDoc(postRef, {
+                likes: currentUser.uid in (await getDoc(postRef)).data().likes ? arrayRemove(currentUser.uid) : arrayUnion(currentUser.uid)
+            });
+            showMessage('Like updated!', 'success');
+        } catch (error) {
+            console.error('Error toggling like:', error);
+            showMessage('Failed to update like. Please try again.', 'error');
+        }
+    };
+
+    // Add Comment
+    window.addComment = async function(event, postId) {
+        event.preventDefault();
+        if (!currentUser || currentUser.isAnonymous) {
+            showMessage('Please sign in to comment.', 'error');
+            return;
+        }
+
+        const text = document.getElementById('commentText').value.trim();
+        if (!text) return;
+
+        const submitBtn = event.target.querySelector('.comment-submit');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...';
+
+        try {
+            await addDoc(collection(db, `blogs/${postId}/comments`), {
+                text: text,
+                userId: currentUser.uid,
+                userName: await getUserName(currentUser.uid),
+                timestamp: serverTimestamp()
+            });
+
+            document.getElementById('commentText').value = '';
+            showMessage('Comment posted!', 'success');
+        } catch (error) {
+            console.error('Error adding comment:', error);
+            showMessage('Failed to post comment. Please try again.', 'error');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Post Comment';
+        }
+    };
+
+    // Delete Comment
+    window.deleteComment = async function(commentId, postId) {
+        if (!currentUser || currentUser.isAnonymous) return;
+
+        if (confirm('Delete this comment?')) {
+            try {
+                await deleteDoc(doc(db, `blogs/${postId}/comments`, commentId));
+                showMessage('Comment deleted!', 'success');
+            } catch (error) {
+                console.error('Error deleting comment:', error);
+                showMessage('Failed to delete comment.', 'error');
+            }
+        }
+    };
+
+    // Show All Likers
+    window.showAllLikers = async function(postId) {
+        try {
+            const postDoc = await getDoc(doc(db, 'blogs', postId));
+            if (!postDoc.exists()) return;
+
+            const data = postDoc.data();
+            const allLikersNames = await Promise.all(data.likes.map(async (uid) => await getUserName(uid)));
+
+            if (allLikersNames.length === 0) {
+                showMessage('No likes yet.', 'info');
+                return;
+            }
+
+            // Simple alert for now; could be modal
+            alert('Liked by:\n' + allLikersNames.join('\n'));
+        } catch (error) {
+            console.error('Error showing likers:', error);
+            showMessage('Failed to load likers.', 'error');
+        }
+    };
+
+    // Edit Post
+    window.editPost = function(postId) {
+        if (!currentUser || currentUser.isAnonymous) {
+            showMessage('Please sign in to edit posts.', 'error');
+            window.location.href = 'signin.html';
+            return;
+        }
+        const postDoc = await getDoc(doc(db, 'blogs', postId));
+        if (!postDoc.exists() || postDoc.data().authorId !== currentUser.uid) {
+            showMessage('You are not authorized to edit this post.', 'error');
+            return;
+        }
+        window.location.href = `blog.html?edit=${postId}`;
+    };
+
+    // Save Edit
+    window.saveEdit = async function(postId) {
+        if (!currentUser || currentUser.isAnonymous) return;
+
+        const title = document.getElementById('editTitle').value.trim();
+        const body = document.getElementById('editBody').value.trim();
+        const imageFile = document.getElementById('editImage').files[0];
+
+        if (!title || !body) {
+            showMessage('Title and body are required.', 'error');
+            return;
+        }
+
+        try {
+            const postRef = doc(db, 'blogs', postId);
+            const updates = { 
+                title, 
+                body,
+                updatedAt: serverTimestamp()
+            };
+
+            // Handle Image Upload (Placeholder - Implement Firebase Storage if needed)
+            if (imageFile) {
+                // TODO: Upload to Storage and set updates.image = downloadURL
+                // For now, skip or use placeholder
+                // Example:
+                // import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
+                // const storageRef = ref(storage, `blogs/${postId}/${imageFile.name}`);
+                // await uploadBytes(storageRef, imageFile);
+                // updates.image = await getDownloadURL(storageRef);
+                showMessage('Image upload not implemented. Post saved without image.', 'info');
+            }
+
+            await updateDoc(postRef, updates);
+            showMessage('Post updated successfully!', 'success');
+            window.location.href = `blog.html?post=${postId}`;
+        } catch (error) {
+            console.error('Error saving edit:', error);
+            showMessage('Failed to save edits. Please try again.', 'error');
+        }
+    };
+
+    // Delete Post
+    window.deletePost = async function(postId) {
+        if (!currentUser || currentUser.isAnonymous) {
+            showMessage('Please sign in to delete posts.', 'error');
+            return;
+        }
+
+        try {
+            const postDoc = await getDoc(doc(db, 'blogs', postId));
+            if (!postDoc.exists() || postDoc.data().authorId !== currentUser.uid) {
+                showMessage('You are not authorized to delete this post.', 'error');
+                return;
+            }
+
+            if (confirm('Delete this post? This cannot be undone. Comments will also be deleted.')) {
+                const batch = writeBatch(db);
+                batch.delete(doc(db, 'blogs', postId));
+
+                // Delete comments subcollection
+                const commentsQuery = query(collection(db, `blogs/${postId}/comments`));
+                const commentsSnap = await getDocs(commentsQuery);
+                commentsSnap.forEach((doc) => batch.delete(doc.ref));
+
+                await batch.commit();
+                showMessage('Post and comments deleted successfully.', 'success');
+                window.location.href = 'blog.html';
+            }
+        } catch (error) {
+            console.error('Error deleting post:', error);
+            showMessage('Failed to delete post. Please try again.', 'error');
+        }
+    };
+
+    // Share Post
+    window.sharePost = function(title) {
+        const url = window.location.href;
+        if (navigator.share) {
+            navigator.share({
+                title: title || 'Top Autocare Blog',
+                url: url
+            }).catch(err => console.error('Share error:', err));
+        } else {
+            navigator.clipboard.writeText(url).then(() => {
+                showMessage('Link copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Copy error:', err);
+                showMessage('Failed to copy link.', 'error');
+            });
+        }
+    };
+
+    // Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+        // Show mobile nav on small screens
+        if (window.innerWidth <= 768) {
+            document.querySelector('.mobile-nav').style.display = 'block';
+        }
+    });
+
+    // Cleanup on unload
+    window.addEventListener('beforeunload', () => {
+        cleanupListeners();
+        if (unsubscribeNotifications) unsubscribeNotifications();
+    });
+
+    console.log('📰 Blog page loaded with Firebase integration');
+</script>
+
+<!-- Header Auto Hide on Scroll -->
+<script>
+    let lastScrollTop = 0;
+    const header = document.getElementById('header');
+    const mobileNav = document.querySelector('.mobile-nav');
+
+    window.addEventListener('scroll', () => {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            if (header) header.classList.add('hidden');
+            if (mobileNav) mobileNav.classList.add('hidden');
+        } else {
+            if (header) header.classList.remove('hidden');
+            if (mobileNav) mobileNav.classList.remove('hidden');
+        }
+        
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+</script>
+
+<!-- Service Worker Registration -->
+<script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then((registration) => {
+                    console.log('✅ Service Worker registered');
+                })
+                .catch((error) => {
+                    console.error('❌ Service Worker error:', error);
+                });
+        });
+    }
+</script>
+
+<script src="analytics.js"></script>
+<script src="offline-db.js"></script>
+<script src="performance-monitor.js"></script>
+<script src="error-handler.js"></script>
+<script src="service-worker-manager.js"></script>
+</body>
+</html>

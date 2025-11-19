@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Offline - Top Autocare Garage</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="msapplication-TileColor" content="#d4af37">
+    <meta name="application-name" content="Top Autocare">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+
+    <!-- Mobile/PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Top Autocare">
+    <link rel="apple-touch-icon" href="/assets/images/app-icon-512.png">
+
+    <!-- Favicon for Browsers -->
+    <link rel="icon" href="/assets/images/app-icon-192.png" sizes="192x192" type="image/png">
+    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            line-height: 1.6;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px);
+            z-index: -1;
+        }
+        .offline-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(30, 30, 30, 0.95);
+            padding: 2.5rem;
+            border-radius: 15px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .offline-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #d4af37, #b8962e, #d4af37);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .offline-icon {
+            font-size: 4rem;
+            color: #d4af37;
+            margin-bottom: 1.5rem;
+            animation: pulse 2s infinite;
+            display: block;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        .offline-title {
+            color: #d4af37;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+        .offline-description {
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #fff;
+        }
+        .retry-btn {
+            background: #d4af37;
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem auto;
+            display: block;
+            min-width: 200px;
+        }
+        .retry-btn:hover:not(:disabled) {
+            background: #b8962e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        .retry-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .retry-btn.spinning {
+            animation: spin 1s linear infinite;
+        }
+        .offline-features {
+            margin-top: 2rem;
+            text-align: left;
+        }
+        .features-title {
+            color: #d4af37;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-align: center;
+        }
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #d4af37;
+            transition: all 0.3s ease;
+        }
+        .feature:hover {
+            background: rgba(212, 175, 55, 0.2);
+            transform: translateX(5px);
+        }
+        .feature i {
+            color: #d4af37;
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .feature-text {
+            color: #fff;
+            font-size: 1rem;
+        }
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 107, 107, 0.9);
+            color: #fff;
+            padding: 0.75rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .status-indicator.show {
+            display: flex;
+            animation: slideIn 0.3s ease;
+        }
+        .status-indicator.online {
+            background: rgba(76, 175, 80, 0.9);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .offline-container {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+            .offline-title {
+                font-size: 2rem;
+            }
+            .offline-description {
+                font-size: 1rem;
+            }
+            .retry-btn {
+                min-width: 250px;
+                padding: 0.875rem 1.5rem;
+            }
+            .status-indicator {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                flex-direction: column;
+                text-align: center;
+            }
+            .feature {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            .feature i {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Status Indicator -->
+    <div class="status-indicator" id="statusIndicator">
+        <i class="fas fa-wifi-slash"></i>
+        <span>Offline Mode Active</span>
+    </div>
+
+    <div class="offline-container">
+        <div class="offline-icon">
+            <i class="fas fa-wifi-slash"></i>
+        </div>
+        <h1 class="offline-title">You're Offline</h1>
+        <p class="offline-description">Top Autocare Garage is currently offline. Some features require an internet connection to work properly.</p>
+        <p class="offline-description">Your progress is safe and will sync automatically when you reconnect.</p>
+        
+        <button class="retry-btn" onclick="checkConnection()" id="retryBtn">
+            <i class="fas fa-sync-alt"></i> Retry Connection
+        </button>
+        
+        <div class="offline-features">
+            <h2 class="features-title">What Works Offline</h2>
+            <div class="feature">
+                <i class="fas fa-check-circle"></i>
+                <span class="feature-text">Basic navigation and cached pages</span>
+            </div>
+            <div class="feature">
+                <i class="fas fa-check-circle"></i>
+                <span class="feature-text">Locally stored data and preferences</span>
+            </div>
+            <div class="feature">
+                <i class="fas fa-check-circle"></i>
+                <span class="feature-text">Queued actions (sync on reconnect)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const retryBtn = document.getElementById('retryBtn');
+        const statusIndicator = document.getElementById('statusIndicator');
+
+        // Update Status Indicator
+        function updateStatus(online) {
+            if (online) {
+                statusIndicator.innerHTML = '<i class="fas fa-wifi"></i> <span>Back Online!</span>';
+                statusIndicator.className = 'status-indicator online show';
+                setTimeout(() => statusIndicator.classList.remove('show'), 3000);
+                window.location.reload();
+            } else {
+                statusIndicator.innerHTML = '<i class="fas fa-wifi-slash"></i> <span>Offline Mode</span>';
+                statusIndicator.className = 'status-indicator show';
+            }
+        }
+
+        // Check Connection
+        window.checkConnection = () => {
+            retryBtn.classList.add('spinning');
+            retryBtn.disabled = true;
+            
+            if (navigator.onLine) {
+                window.location.reload();
+            } else {
+                alert('Still offline. Please check your internet connection and try again.');
+                retryBtn.classList.remove('spinning');
+                retryBtn.disabled = false;
+            }
+        };
+
+        // Listen for online/offline
+        window.addEventListener('online', () => {
+            updateStatus(true);
+        });
+
+        window.addEventListener('offline', () => {
+            updateStatus(false);
+        });
+
+        // Initial status check
+        updateStatus(navigator.onLine);
+
+        // Auto-retry every 30 seconds when offline
+        setInterval(() => {
+            if (!navigator.onLine) {
+                checkConnection();
+            }
+        }, 30000);
+
+        console.log('Offline page loaded');
+    </script>
+
+    <!-- Service Worker Registration (even offline) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('✅ Service Worker registered (offline page)'))
+                .catch(error => console.log('❌ Service Worker error'));
+        }
+    </script>
+<script src="analytics.js"></script>
+<script src="offline-db.js"></script>
+<script src="performance-monitor.js"></script>
+<script src="error-handler.js"></script>
+<script src="service-worker-manager.js"></script>
+</body>
+</html>

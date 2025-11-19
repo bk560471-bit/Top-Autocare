@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Verify Email - Top Autocare Garage</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
+    <meta name="theme-color" content="#d4af37">
+    <meta name="msapplication-TileColor" content="#d4af37">
+    <meta name="application-name" content="Top Autocare">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+
+    <!-- Mobile/PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Top Autocare">
+    <link rel="apple-touch-icon" href="/assets/images/app-icon-512.png">
+    <link rel="preload" href="/offline.html" as="document" crossorigin="anonymous">
+
+    <!-- Favicon for Browsers -->
+    <link rel="icon" href="/assets/images/app-icon-192.png" sizes="192x192" type="image/png">
+    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            line-height: 1.6;
+            position: relative;
+            min-height: 100vh;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/background.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(4px);
+            z-index: -1;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .verification-content {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            border: 1px solid #333;
+            padding: 2.5rem;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .verification-content {
+                margin: 1rem;
+                padding: 2rem 1.5rem;
+            }
+        }
+        .verification-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(212, 175, 55, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            color: #d4af37;
+            transition: all 0.3s ease;
+        }
+        .success-icon {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+        .verification-content h1 {
+            color: #d4af37;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .verification-content p {
+            color: #fff;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .user-email {
+            background: rgba(18, 18, 18, 0.8);
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            font-family: 'Roboto', monospace;
+            color: #d4af37;
+            border: 1px solid #333;
+            word-break: break-all;
+            font-size: 1rem;
+        }
+        .signup-btn {
+            background: #d4af37;
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+        .signup-btn:hover:not(:disabled) {
+            background: #b8962e;
+            transform: translateY(-2px);
+        }
+        .signup-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #progressIndicator {
+            display: none;
+            margin: 1rem 0;
+        }
+        .spinner {
+            border: 4px solid #333;
+            border-top: 4px solid #d4af37;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #progressIndicator p {
+            color: #fff;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+        .danger-btn {
+            background: rgba(255, 107, 107, 0.2);
+            color: #fff;
+            border: 1px solid #ff6b6b;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .danger-btn:hover {
+            background: rgba(255, 107, 107, 0.3);
+            border-color: #ff6b6b;
+            transform: translateY(-1px);
+        }
+        /* Messages */
+        #messageContainer {
+            margin-bottom: 1rem;
+            z-index: 1000;
+        }
+        .message {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+            max-width: 100%;
+            margin: 1rem 0;
+        }
+        .message.success {
+            background: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        .message.error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff6b6b;
+            border: 1px solid #ff6b6b;
+        }
+        .message.info {
+            background: rgba(33, 150, 243, 0.2);
+            color: #2196F3;
+            border: 1px solid #2196F3;
+        }
+        /* Footer */
+        .footer {
+            background: rgba(0, 0, 0, 0.9);
+            color: #fff;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-top: 1px solid #333;
+            margin-top: 3rem;
+        }
+        .footer .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .footer p {
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            color: #fff;
+        }
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .social-links a {
+            color: #d4af37;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .social-links a:hover {
+            color: #fff;
+            background: #d4af37;
+            transform: translateY(-2px);
+        }
+        .footer-links {
+            font-size: 0.75rem;
+            color: #BDBDBD;
+            margin-top: 1rem;
+        }
+        .footer-links a {
+            color: #d4af37;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            margin: 0 0.5rem;
+        }
+        .footer-links a:hover {
+            color: #fff;
+        }
+        /* Offline Notification */
+        .offline-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 107, 107, 0.9);
+            color: #fff;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .offline-notification.show {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideIn 0.3s ease;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @media (max-width: 768px) {
+            .offline-notification {
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+        /* Loading overlay for verification */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .loading-overlay.show {
+            display: flex;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(212, 175, 55, 0.2);
+            border-top: 4px solid #d4af37;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p>Verifying your email...</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Verification Container -->
+        <div id="verificationContainer" class="verification-content">
+            <div class="verification-icon">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h1>Verify Your Email</h1>
+            <p>We've sent a verification email to your account. Please check your inbox (and spam/junk folder) to verify your email address.</p>
+            <p>This ensures your account security and enables important notifications.</p>
+            
+            <div class="user-email" id="userEmail">your.email@example.com</div>
+            
+            <p style="color: #BDBDBD; font-size: 0.95rem;">Didn't receive the email? Check spam folder or resend below.</p>
+            <button id="resendBtn" class="signup-btn">
+                <i class="fas fa-paper-plane"></i> Resend Verification Email
+            </button>
+            
+            <div id="progressIndicator">
+                <div class="spinner"></div>
+                <p>Sending verification email...</p>
+            </div>
+
+            <div id="messageContainer"></div>
+
+            <div class="btn-group">
+                <button id="logoutBtn" class="danger-btn">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Success Container -->
+        <div id="successContainer" class="verification-content" style="display: none;">
+            <div class="verification-icon success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1>Email Verified!</h1>
+            <p>Your email address has been successfully verified. Welcome to Top Autocare Garage!</p>
+            <p>Redirecting to sign in...</p>
+            
+            <div class="btn-group">
+                <a href="signin.html" class="signup-btn">
+                    <i class="fas fa-sign-in-alt"></i> Go to Sign In
+                </a>
+                <button id="logoutBtnSuccess" class="danger-btn">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Top Autocare Garage. All rights reserved. Professional automotive care in Nairobi, Kenya.</p>
+            <div class="social-links">
+                <a href="https://wa.me/254757562447" aria-label="WhatsApp" target="_blank" rel="noopener">
+                    <i class="fab fa-whatsapp"></i>
+                </a>
+                <a href="https://twitter.com/BrianVags" aria-label="Twitter" target="_blank" rel="noopener">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="#" aria-label="Facebook">
+                    <i class="fab fa-facebook"></i>
+                </a>
+                <a href="#" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+            <div class="footer-links">
+                <a href="privacy-policy.html">Privacy Policy</a> | 
+                <a href="terms-of-service.html">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Offline Notification -->
+    <div class="offline-notification" id="offlineNotification">
+        <i class="fas fa-wifi-slash"></i> Offline - Some features may be limited
+    </div>
+
+    <!-- Firebase Script -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { 
+            getAuth, 
+            onAuthStateChanged, 
+            sendEmailVerification, 
+            signOut,
+            applyActionCode 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBkVYS0CaKe1kHPp9GVnURiZz5WP5tE3iM",
+            authDomain: "top-autocare.firebaseapp.com",
+            projectId: "top-autocare",
+            storageBucket: "top-autocare.firebasestorage.app",
+            messagingSenderId: "879247821822",
+            appId: "1:879247821822:web:e6a418395d52aac99a4eaf",
+            measurementId: "G-T5NDM5M33Z"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        let resendTimeout = 0;
+        let verificationCheckInterval = null;
+        let verificationHandled = false;
+
+        // DOM Elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const verificationContainer = document.getElementById('verificationContainer');
+        const successContainer = document.getElementById('successContainer');
+        const resendBtn = document.getElementById('resendBtn');
+        const progressIndicator = document.getElementById('progressIndicator');
+        const messageContainer = document.getElementById('messageContainer');
+        const userEmailEl = document.getElementById('userEmail');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const logoutBtnSuccess = document.getElementById('logoutBtnSuccess');
+        const offlineNotification = document.getElementById('offlineNotification');
+
+        // Utility Functions
+        function showMessage(message, type = 'info') {
+            messageContainer.innerHTML = '';
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i>
+                ${message}
+            `;
+            messageContainer.appendChild(div);
+            setTimeout(() => div.remove(), type === 'error' ? 6000 : 4000);
+        }
+
+        function showProgress(show = true) {
+            progressIndicator.style.display = show ? 'block' : 'none';
+            resendBtn.disabled = show;
+        }
+
+        function showLoading(show = true) {
+            loadingOverlay.style.display = show ? 'flex' : 'none';
+        }
+
+        // Check for Verification Code in URL
+        function checkForVerificationCode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+            const oobCode = urlParams.get('oobCode');
+            const continueUrl = urlParams.get('continueUrl');
+            
+            if (mode === 'verifyEmail' && oobCode) {
+                showLoading(true);
+                handleEmailVerification(oobCode, continueUrl);
+                return true;
+            }
+            return false;
+        }
+
+        // Handle Email Verification
+        async function handleEmailVerification(oobCode, continueUrl) {
+            try {
+                const result = await applyActionCode(auth, oobCode);
+                showLoading(false);
+                
+                showMessage('Email verified successfully! Redirecting...', 'success');
+                
+                // Clear interval
+                if (verificationCheckInterval) clearInterval(verificationCheckInterval);
+                
+                // Show success
+                verificationContainer.style.display = 'none';
+                successContainer.style.display = 'block';
+                
+                // Redirect
+                const redirectTo = continueUrl || 'signin.html';
+                setTimeout(() => window.location.href = redirectTo, 3000);
+                
+            } catch (error) {
+                showLoading(false);
+                console.error('Verification error:', error);
+                let errorMsg = 'Verification failed. ';
+                
+                switch (error.code) {
+                    case 'auth/invalid-action-code':
+                        errorMsg += 'Invalid or expired verification link. Please request a new one.';
+                        break;
+                    case 'auth/expired-action-code':
+                        errorMsg += 'Verification link has expired. Request a new email.';
+                        break;
+                    case 'auth/user-disabled':
+                        errorMsg += 'Account disabled. Contact support.';
+                        break;
+                    default:
+                        errorMsg += error.message;
+                }
+                
+                showMessage(errorMsg, 'error');
+            }
+        }
+
+        // Check Verification Status
+        async function checkVerificationStatus(user) {
+            if (!user || verificationHandled) return;
+            
+            try {
+                await user.reload();
+                userEmailEl.textContent = user.email || 'N/A';
+                
+                if (user.emailVerified) {
+                    verificationHandled = true;
+                    if (verificationCheckInterval) clearInterval(verificationCheckInterval);
+                    
+                    showMessage('Email already verified! Redirecting to sign in...', 'success');
+                    verificationContainer.style.display = 'none';
+                    successContainer.style.display = 'block';
+                    
+                    setTimeout(() => window.location.href = 'signin.html', 2000);
+                    return;
+                }
+                
+                showMessage(`Verification pending for ${user.email}. Check your inbox.`, 'info');
+                verificationContainer.style.display = 'block';
+                successContainer.style.display = 'none';
+                
+            } catch (error) {
+                console.error('Status check error:', error);
+                showMessage('Error checking verification status. Please refresh.', 'error');
+            }
+        }
+
+        // Resend Verification Email
+        resendBtn.addEventListener('click', async () => {
+            const user = auth.currentUser;
+            if (!user) {
+                showMessage('Please sign in to resend verification.', 'error');
+                return;
+            }
+            
+            if (resendTimeout > Date.now()) {
+                const remaining = Math.ceil((resendTimeout - Date.now()) / 1000);
+                showMessage(`Wait ${remaining}s before resending.`, 'info');
+                return;
+            }
+            
+            showProgress(true);
+            resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            
+            try {
+                await sendEmailVerification(user, {
+                    url: `${window.location.origin}/verify-email.html`,
+                    handleCodeInApp: true
+                });
+                
+                showMessage('Verification email sent! Check your inbox and spam.', 'success');
+                resendTimeout = Date.now() + 60000; // 1 min cooldown
+                
+                let countdown = 60;
+                const interval = setInterval(() => {
+                    countdown--;
+                    resendBtn.innerHTML = `<i class="fas fa-paper-plane"></i> Resend (${countdown}s)`;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(interval);
+                        resendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Resend Verification Email';
+                        resendBtn.disabled = false;
+                    }
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Resend error:', error);
+                showMessage('Resend failed. Please try again later.', 'error');
+                resendBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Resend Verification Email';
+                resendBtn.disabled = false;
+            } finally {
+                showProgress(false);
+            }
+        });
+
+        // Logout
+        async function handleLogout() {
+            try {
+                if (verificationCheckInterval) clearInterval(verificationCheckInterval);
+                await signOut(auth);
+                showMessage('Signed out successfully.', 'success');
+                setTimeout(() => window.location.href = 'signin.html', 1500);
+            } catch (error) {
+                console.error('Logout error:', error);
+                showMessage('Logout failed. Refresh page.', 'error');
+            }
+        }
+
+        logoutBtn.addEventListener('click', handleLogout);
+        logoutBtnSuccess.addEventListener('click', handleLogout);
+
+        // Initialize
+        onAuthStateChanged(auth, (user) => {
+            if (checkForVerificationCode()) return;
+            
+            if (user) {
+                checkVerificationStatus(user);
+                
+                if (!verificationCheckInterval) {
+                    verificationCheckInterval = setInterval(() => checkVerificationStatus(auth.currentUser), 10000);
+                }
+            } else {
+                showMessage('Please sign in to verify email.', 'error');
+                setTimeout(() => window.location.href = 'signin.html', 2000);
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (verificationCheckInterval) clearInterval(verificationCheckInterval);
+        });
+
+        console.log('Email verification page initialized');
+    </script>
+
+    <!-- Offline Detection -->
+    <script>
+        const offlineNotification = document.getElementById('offlineNotification');
+
+        window.addEventListener('online', () => offlineNotification.classList.remove('show'));
+        window.addEventListener('offline', () => offlineNotification.classList.add('show'));
+    </script>
+
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('✅ SW registered'))
+                    .catch(err => console.error('❌ SW error:', err));
+            });
+        }
+    </script>
+<script src="analytics.js"></script>
+<script src="offline-db.js"></script>
+<script src="performance-monitor.js"></script>
+<script src="error-handler.js"></script>
+<script src="service-worker-manager.js"></script>
+</body>
+</html>
